@@ -3,20 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>몇의 몇 배 탐험대</title>
+<title>곱셈식 만들기 탐험대</title>
 <style>
-/* ============ 레이아웃 정밀 계산 (1280×800 안에 다 들어감) ============
-  topbar 56 + padding 12+12 = 80
-  vbody: gap 10 × 6 + 콘텐츠 약 670 = 730
-  남는 마진 ~10 ⇒ 800 안에 안 잘리고 스크롤 X
-============================================================ */
+/* ============ 1280×800 안에 다 들어가도록 정밀 계산 ============ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
   font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
-html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0e2a;}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
 #stage{position:absolute;width:1280px;height:800px;left:50%;top:50%;
   transform:translate(-50%,-50%) scale(1);transform-origin:center center;overflow:hidden;border-radius:8px;
-  background:linear-gradient(165deg,#9b6ddc 0%,#7a4ec7 55%,#5a36a8 100%);}
+  background:linear-gradient(165deg,#ff8c5a 0%,#ff6b35 55%,#c44a1a 100%);}
 #decor{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .cloud{position:absolute;font-size:42px;opacity:.7;animation:drift linear infinite;
   filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));}
@@ -29,12 +25,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 
 .topbar{display:flex;align-items:center;gap:12px;}
 .topbar .title{font-size:22px;font-weight:900;color:#fff;
-  background:rgba(20,8,40,.5);padding:7px 22px;border-radius:999px;}
+  background:rgba(40,18,8,.5);padding:7px 22px;border-radius:999px;}
 .topbar .prog{flex:1;display:flex;gap:8px;justify-content:center;}
 .dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.35);transition:.25s;}
 .dot.done{background:#7ee06a;box-shadow:0 0 8px #7ee06a;}
 .dot.cur{background:#ffd23f;transform:scale(1.4);box-shadow:0 0 12px #ffd23f;}
-.spk{width:46px;height:46px;border-radius:14px;border:3px solid #fff;background:#3a2a55;color:#fff;
+.spk{width:46px;height:46px;border-radius:14px;border:3px solid #fff;background:#5a2a18;color:#fff;
   font-size:21px;cursor:pointer;font-weight:900;flex-shrink:0;}
 .spk.on{background:#ffd23f;color:#1f4258;}
 
@@ -55,18 +51,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
   padding:10px 22px;box-shadow:0 4px 0 #9c3340;}
 .btn.big{font-size:25px;padding:14px 38px;box-shadow:0 7px 0 #d68a00;}
 
-/* === 세로 흐름 === */
 .vbody{flex:1;display:flex;flex-direction:column;align-items:center;
   gap:10px;justify-content:flex-start;padding-top:8px;}
 
-/* === 그림 카드 (큰 그림) === */
 .picCard{background:rgba(255,255,255,.96);border-radius:22px;padding:18px 22px;
   box-shadow:0 7px 18px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;
   position:relative;}
 .gridwrap{position:relative;display:inline-block;}
 .objGrid{display:grid;gap:10px;position:relative;justify-content:center;}
 
-/* === 큰 이모지 (저학년 시선 캐치) === */
 .obj{font-size:56px;cursor:pointer;width:76px;height:76px;display:flex;align-items:center;
   justify-content:center;border-radius:50%;transition:all .18s;user-select:none;
   filter:drop-shadow(0 3px 5px rgba(0,0,0,.22));}
@@ -77,7 +70,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 .obj.bundled:hover{transform:none;}
 .obj.small{width:54px;height:54px;font-size:40px;}
 
-/* 묶음 색깔 */
 .obj.cg1{background:rgba(239,68,68,.3);}
 .obj.cg2{background:rgba(34,197,94,.3);}
 .obj.cg3{background:rgba(168,85,247,.3);}
@@ -85,15 +77,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 .obj.cg5{background:rgba(20,184,166,.3);}
 .obj.cg6{background:rgba(236,72,153,.3);}
 
-/* 나머지 (안 묶이는 것) */
-.obj.remainder{background:rgba(255,140,140,.35);border:4px dashed #e0556a;
-  animation:shakeRem .7s ease-in-out infinite;}
-@keyframes shakeRem{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
-
 .ringSvg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;}
 .ringSvg ellipse{fill:none;stroke-width:6;stroke-linecap:round;}
 
-/* === 카운터 카드 (그림 바로 아래) === */
 .counterCard{background:#fff;border:5px solid #ffd23f;border-radius:18px;padding:7px 22px;
   display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(0,0,0,.18);}
 .counterCard .cnLbl{font-size:18px;font-weight:900;color:#5b7585;}
@@ -105,72 +91,59 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 .cnDots .d{width:24px;height:24px;border-radius:50%;background:#e1e8ee;border:3px solid #cfd8e0;transition:.2s;}
 .cnDots .d.on{background:#ffd23f;border-color:#c89c00;box-shadow:0 0 8px #ffd23f;}
 
-/* === 개념 카드 === */
-.conceptCard{background:#fffbe0;border:5px solid #ffd23f;border-radius:18px;padding:10px 28px;
-  font-size:26px;font-weight:900;color:#1f4258;text-align:center;line-height:1.35;
-  box-shadow:0 4px 12px rgba(0,0,0,.18);min-width:600px;}
-.conceptCard .fill{display:inline-block;min-width:48px;padding:0 10px;
-  background:#fff;border:3px dashed #aaa;border-radius:8px;margin:0 3px;color:#999;font-size:24px;}
-.conceptCard .fill.on{border-style:solid;border-color:#5cc24a;color:#1f4258;background:#eefbe9;
-  animation:pop1 .4s;}
-@keyframes pop1{50%{transform:scale(1.3);}}
-.conceptCard .c1{color:#ef4444;}
-.conceptCard .c2{color:#22c55e;}
-.conceptCard .c3{color:#a855f7;}
-.conceptCard .c4{color:#f97316;}
-.conceptCard .c5{color:#14b8a6;}
-.conceptCard .gold{color:#d68a00;}
+/* === 덧셈식 카드 (3+3+3+3=12) === */
+.addEqCard{background:#e7f1ff;border:5px solid #4aa3ff;border-radius:18px;padding:8px 24px;
+  font-size:24px;font-weight:900;color:#1f4258;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);visibility:hidden;flex-wrap:wrap;justify-content:center;}
+.addEqCard.on{visibility:visible;}
+.addEqCard .num{display:inline-block;padding:2px 10px;background:#fff;border-radius:8px;
+  animation:popN .35s;}
+.addEqCard .num.cg1{color:#ef4444;}.addEqCard .num.cg2{color:#22c55e;}
+.addEqCard .num.cg3{color:#a855f7;}.addEqCard .num.cg4{color:#f97316;}
+.addEqCard .num.cg5{color:#14b8a6;}.addEqCard .num.cg6{color:#ec4899;}
+@keyframes popN{from{transform:scale(.3);opacity:0;}50%{transform:scale(1.3);}}
+.addEqCard .arrow{color:#d68a00;animation:bounceA 1.2s ease-in-out infinite;font-size:26px;}
+@keyframes bounceA{50%{transform:translateX(4px);}}
 
-/* === 덧셈식 === */
-.addLine{background:#fff;border-radius:14px;border:3px solid #4aa3ff;padding:5px 18px;
-  font-size:19px;font-weight:900;color:#1f4258;box-shadow:0 3px 8px rgba(0,0,0,.15);
-  visibility:hidden;}
-.addLine.on{visibility:visible;}
-.addLine .lbl{background:#4aa3ff;color:#fff;padding:2px 10px;border-radius:999px;font-size:13px;margin-right:8px;}
+/* === 곱셈식 카드 (3×4=12) === */
+.mulEqCard{background:#fffbe0;border:5px solid #ffd23f;border-radius:18px;padding:9px 28px;
+  font-size:30px;font-weight:900;color:#1f4258;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);visibility:hidden;}
+.mulEqCard.on{visibility:visible;}
+.mulEqCard .a{color:#ef4444;}
+.mulEqCard .b{color:#3a86ff;}
+.mulEqCard .x{color:#ff6b35;font-size:34px;animation:rotX 2s ease-in-out infinite;}
+@keyframes rotX{50%{transform:rotate(180deg);}}
+.mulEqCard .eq{color:#888;}
+.mulEqCard .tot{color:#d68a00;font-size:34px;}
+.mulEqCard .small{font-size:16px;color:#5b7585;font-weight:800;margin-left:6px;}
 
-/* === 액션 row === */
 .actionRow{display:flex;gap:12px;align-items:center;justify-content:center;}
 
-/* === 안내 텍스트 === */
-.instrTxt{font-size:22px;font-weight:900;color:#fff;background:rgba(20,8,40,.5);
+.instrTxt{font-size:22px;font-weight:900;color:#fff;background:rgba(40,18,8,.5);
   padding:7px 24px;border-radius:999px;text-align:center;text-shadow:0 2px 4px rgba(0,0,0,.4);
   max-width:1100px;}
 
-/* === 키패드 (2,3,4,5,6,12 같은 수 화면) === */
-.keypadH{display:flex;gap:10px;background:rgba(20,8,40,.5);padding:10px;border-radius:16px;}
-.keyH{background:linear-gradient(180deg,#7bb8ff,#4287dd);color:#fff;font-size:30px;font-weight:900;
-  border:none;border-radius:12px;width:80px;height:68px;cursor:pointer;box-shadow:0 5px 0 #2c5fa8;}
-.keyH:active{transform:translateY(4px);box-shadow:0 1px 0 #2c5fa8;}
+.keypadH{display:flex;gap:10px;background:rgba(40,18,8,.5);padding:10px;border-radius:16px;}
+.keyH{background:linear-gradient(180deg,#ffb87b,#ff8442);color:#fff;font-size:30px;font-weight:900;
+  border:none;border-radius:12px;width:80px;height:68px;cursor:pointer;box-shadow:0 5px 0 #b85620;}
+.keyH:active{transform:translateY(4px);box-shadow:0 1px 0 #b85620;}
 .keyH.ok{background:linear-gradient(180deg,#a8f098,#5cc24a);box-shadow:0 5px 0 #3c8c30;}
 .keyH.no{background:linear-gradient(180deg,#ffc0c8,#ff8a93);box-shadow:0 5px 0 #c25a5a;opacity:.85;}
 
-/* === 0~9 일자 키패드 (도전) === */
-.keypadLinear{display:flex;gap:6px;background:rgba(20,8,40,.5);padding:9px;border-radius:16px;}
-.keyLin{background:linear-gradient(180deg,#3d6072,#2c4a5c);color:#fff;font-size:26px;font-weight:900;
-  border:none;border-radius:11px;width:64px;height:58px;cursor:pointer;box-shadow:0 4px 0 #16313f;}
+.keypadLinear{display:flex;gap:6px;background:rgba(40,18,8,.5);padding:9px;border-radius:16px;}
+.keyLin{background:linear-gradient(180deg,#5a3625,#3d2418);color:#fff;font-size:26px;font-weight:900;
+  border:none;border-radius:11px;width:64px;height:58px;cursor:pointer;box-shadow:0 4px 0 #1f1208;}
 .keyLin:active{transform:translateY(3px);box-shadow:none;}
 .keyLin.act{background:linear-gradient(180deg,#f0697d,#e0556a);box-shadow:0 4px 0 #9c3340;}
 .keyLin.go{background:linear-gradient(180deg,#a8f098,#5cc24a);box-shadow:0 4px 0 #3c8c30;}
+.kdisp{background:#fff;border-radius:12px;height:54px;display:flex;align-items:center;
+  justify-content:center;font-size:32px;font-weight:900;color:#1f4258;min-width:240px;padding:0 18px;
+  box-shadow:inset 0 3px 7px rgba(0,0,0,.12);gap:10px;}
+.kdisp .slot{display:inline-block;min-width:44px;padding:0 8px;border-bottom:4px dashed #aaa;text-align:center;color:#999;}
+.kdisp .slot.fill{color:#1f4258;border-style:solid;border-color:#5cc24a;}
+.kdisp .slot.cur{background:#fffbe0;border-color:#ff6b35;color:#ff6b35;}
 
-.kdisp{background:#fff;border-radius:12px;height:48px;display:flex;align-items:center;
-  justify-content:center;font-size:30px;font-weight:900;color:#1f4258;min-width:130px;
-  box-shadow:inset 0 3px 7px rgba(0,0,0,.12);}
-
-/* === 막대 비교 === */
-.barwrap{background:rgba(255,255,255,.96);border-radius:20px;padding:16px 22px;
-  display:flex;flex-direction:column;gap:14px;box-shadow:0 7px 18px rgba(0,0,0,.22);min-width:780px;}
-.barrow{display:flex;align-items:center;gap:12px;}
-.barlbl{font-size:19px;font-weight:900;color:#1f4258;min-width:160px;}
-.bar{height:48px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.2);
-  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;
-  text-shadow:0 2px 3px rgba(0,0,0,.4);transition:width .4s;}
-.barrep{display:flex;gap:3px;height:48px;}
-.barrep .bar.rep{animation:slideIn .55s ease backwards;}
-@keyframes slideIn{from{transform:translateX(-70px);opacity:0;}}
-.barCounter{background:#fffbe0;border:4px solid #ffd23f;border-radius:12px;padding:5px 18px;
-  font-size:20px;font-weight:900;color:#1f4258;}
-
-/* === 시작 === */
 #scrStart{align-items:center;justify-content:center;gap:14px;}
 #scrStart .titleEm{font-size:56px;animation:bob 3s ease-in-out infinite;}
 @keyframes bob{50%{transform:translateY(-12px);}}
@@ -183,36 +156,42 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 .namesel{font-size:21px;font-weight:800;padding:9px 20px;border-radius:13px;
   border:5px solid #ffd23f;color:#1f4258;background:#fff;}
 
-/* === 동기유발 친구 카드 === */
-.friends{display:flex;gap:34px;justify-content:center;}
-.friendCard{background:#fff;border-radius:20px;padding:14px 22px;
-  box-shadow:0 6px 14px rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:8px;
-  min-width:290px;}
-.friendCard h3{font-size:22px;color:#1f4258;}
-.candies{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:270px;}
-.candies .obj{width:46px;height:46px;font-size:34px;transition:all .3s;}
-
-/* 동기유발 메시지 결과 (그림 바로 아래 즉시 보임) */
+/* === 동기유발 === */
+.motTable{display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:18px;padding:14px 18px;
+  box-shadow:0 6px 14px rgba(0,0,0,.2);min-width:740px;}
+.plateRow{display:flex;gap:10px;align-items:center;}
+.plateLbl{font-size:18px;font-weight:900;color:#1f4258;min-width:80px;}
+.plate{background:#fff8d6;border:3px solid #ffd23f;border-radius:12px;padding:6px 10px;
+  display:flex;gap:4px;align-items:center;}
+.plate .obj{width:42px;height:42px;font-size:32px;}
 .motMsg{background:#fff;border-radius:16px;padding:9px 22px;font-size:20px;font-weight:900;color:#1f4258;
   text-align:center;line-height:1.4;box-shadow:0 4px 10px rgba(0,0,0,.15);min-width:520px;
   visibility:hidden;}
-.motMsg.on{visibility:visible;animation:pop1 .5s;}
+.motMsg.on{visibility:visible;animation:popN .5s;}
 .motMsg.add{border:4px solid #4aa3ff;}
-.motMsg.mul{border:4px solid #e0556a;}
+.motMsg.mul{border:4px solid #ff6b35;}
+
+/* === 같은 수 다른 곱셈식 === */
+.mulBoard{display:grid;grid-template-columns:repeat(3,auto);gap:10px;justify-content:center;
+  background:rgba(255,255,255,.94);border-radius:18px;padding:14px;box-shadow:0 6px 14px rgba(0,0,0,.2);}
+.mulSlot{background:#f3f9fc;border:4px solid #cfe6ea;border-radius:14px;padding:8px 14px;
+  font-size:21px;font-weight:900;color:#1f4258;display:flex;align-items:center;gap:8px;min-width:170px;justify-content:center;}
+.mulSlot.done{background:linear-gradient(180deg,#dff7d6,#a8f098);border-color:#5cc24a;color:#2d6921;animation:popN .4s;}
+.mulSlot .qm{color:#aaa;}
 
 /* === 모달 === */
-.ov{position:absolute;inset:0;background:rgba(8,4,28,.85);display:none;
+.ov{position:absolute;inset:0;background:rgba(12,4,2,.85);display:none;
   align-items:center;justify-content:center;z-index:50;padding:18px;}
 .ov.on{display:flex;}
 .pop{background:#fff;border-radius:28px;padding:22px 28px;width:760px;text-align:center;
   border:6px solid #ffd23f;box-shadow:0 14px 36px rgba(0,0,0,.4);animation:popIn .4s;max-height:96%;overflow-y:auto;}
 @keyframes popIn{from{transform:scale(.3);opacity:0;}}
-.pop h2{font-size:28px;color:#9b6ddc;margin-bottom:10px;}
+.pop h2{font-size:28px;color:#ff6b35;margin-bottom:10px;}
 .pop .q{font-size:22px;font-weight:900;color:#1f4258;line-height:1.4;margin-bottom:14px;}
 .popResLine{font-size:21px;font-weight:900;color:#1f4258;background:#fffbe0;
   padding:10px 20px;border-radius:13px;border:4px solid #ffd23f;margin:8px 0;line-height:1.4;}
 .popResLine.add{background:#e7f1ff;border-color:#4aa3ff;}
-.popResLine.mul{background:#fde8ee;border-color:#e0556a;}
+.popResLine.mul{background:#ffe9de;border-color:#ff6b35;}
 .qopts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;}
 .qopt{background:linear-gradient(180deg,#fff8d6,#ffe89c);border:4px solid #ffd23f;border-radius:18px;
   padding:14px 12px;font-size:20px;font-weight:900;color:#5e4b00;cursor:pointer;
@@ -229,7 +208,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0c1f33;}
 .hintbox.show{display:block;}
 .popRow{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;}
 
-/* === 녹음 === */
 .recwrap{background:#fff;border-radius:24px;padding:16px 22px;display:flex;flex-direction:column;
   gap:10px;align-items:center;box-shadow:0 8px 22px rgba(0,0,0,.25);max-width:660px;}
 .recnote{border-radius:18px;padding:11px 18px;font-size:19px;font-weight:800;text-align:center;line-height:1.5;}
@@ -250,7 +228,7 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 .guidetxt{background:#fff;border-radius:14px;padding:8px 14px;font-size:15px;font-weight:800;color:#1f4258;
   text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.15);max-width:580px;}
 
-/* === ★ 숫자 BURST (짠! 대신 묶음 크기 숫자) === */
+/* === 숫자 BURST === */
 .numBurst{position:absolute;font-size:200px;font-weight:900;
   text-shadow:0 6px 0 rgba(0,0,0,.25),0 12px 26px rgba(0,0,0,.5);
   z-index:59;pointer-events:none;font-family:'Pretendard',sans-serif;
@@ -260,19 +238,29 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
   25%{transform:translate(-50%,-50%) scale(1.6) rotate(8deg);opacity:1;}
   55%{transform:translate(-50%,-50%) scale(1.3) rotate(-4deg);opacity:1;}
   100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:0;}}
+
+/* × 기호 BURST */
+.opBurst{position:absolute;font-size:220px;font-weight:900;color:#ff6b35;
+  text-shadow:0 6px 0 #b8431d,0 12px 26px rgba(0,0,0,.5);
+  z-index:59;pointer-events:none;
+  animation:opA 1.6s cubic-bezier(.3,1.5,.5,1) forwards;}
+@keyframes opA{
+  0%{transform:translate(-50%,-50%) scale(.1) rotate(-90deg);opacity:0;}
+  20%{transform:translate(-50%,-50%) scale(1.8) rotate(15deg);opacity:1;}
+  50%{transform:translate(-50%,-50%) scale(1.3) rotate(-5deg);opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:0;}}
 .sparkle{position:absolute;font-size:42px;z-index:58;pointer-events:none;}
 @keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(.4);opacity:0;}}
 
 #confetti{position:absolute;inset:0;pointer-events:none;z-index:60;}
 .toast{position:absolute;left:50%;top:18px;transform:translateX(-50%);
-  background:#1f4258;color:#fff;font-size:19px;font-weight:900;
+  background:#5a2a18;color:#fff;font-size:19px;font-weight:900;
   padding:10px 24px;border-radius:999px;z-index:55;display:none;border:3px solid #ffd23f;}
 
-/* === 수료증 === */
 .cert{background:linear-gradient(180deg,#fffef6,#fff6d8);border:10px solid #ffd23f;border-radius:26px;
   flex:1;padding:18px 28px;display:flex;flex-direction:column;align-items:center;gap:9px;
   box-shadow:0 10px 26px rgba(0,0,0,.3);}
-.cert h2{font-size:28px;font-weight:900;color:#7b3fc2;}
+.cert h2{font-size:28px;font-weight:900;color:#ff6b35;}
 .cert .name{font-size:30px;font-weight:900;color:#1f4258;}
 .compare{display:flex;gap:16px;width:100%;}
 .cmp{flex:1;border-radius:18px;padding:11px 14px;}
@@ -281,12 +269,11 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 .cmp h4{font-size:17px;margin-bottom:4px;}
 .cmp p{font-size:16px;font-weight:700;color:#36505e;line-height:1.5;}
 
-/* === 대시보드 === */
 .dashWrap{flex:1;display:flex;flex-direction:column;gap:10px;}
 .kpi{display:flex;gap:12px;justify-content:center;}
 .kpicard{background:#fff;border-radius:16px;padding:12px 22px;text-align:center;
   box-shadow:0 4px 12px rgba(0,0,0,.18);}
-.kpicard .n{font-size:32px;font-weight:900;color:#9b6ddc;}
+.kpicard .n{font-size:32px;font-weight:900;color:#ff6b35;}
 .kpicard .l{font-size:14px;font-weight:800;color:#5b7585;}
 .dashList{flex:1;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:4px;}
 .dashRow{background:#fff;border-radius:16px;border-left:9px solid #5cc24a;padding:10px 18px;
@@ -301,14 +288,14 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 
 <!-- 시작 -->
 <section class="screen on" id="scrStart">
-  <div class="titleEm">✖️🧺🐧</div>
-  <h1>몇의 몇 배 탐험대</h1>
+  <div class="titleEm">3✖️4🟰12</div>
+  <h1>곱셈식 만들기 탐험대</h1>
   <div class="goalbox">
     <h3>🎯 오늘의 목표</h3>
     <p>이 활동이 끝나면 우리는<br>
-      👉 <span class="hl">몇씩 몇 묶음 = 몇의 몇 배</span>를 말할 수 있어요!<br>
-      👉 <span class="hl">색 막대를 이어 붙여</span> 몇 배인지 알 수 있어요!<br>
-      👉 <span class="hl">같은 수를 여러 가지 배</span>로 나타낼 수 있어요!</p>
+      👉 <span class="hl">3+3+3+3을 3×4</span>로 쓸 수 있어요!<br>
+      👉 <span class="hl">곱셈식</span>을 보고 그림으로 그릴 수 있어요!<br>
+      👉 <span class="hl">같은 수를 여러 가지 곱셈식</span>으로 쓸 수 있어요!</p>
   </div>
   <div style="display:flex;gap:12px;align-items:center;">
     <span style="font-size:20px;font-weight:900;color:#fff;">이름</span>
@@ -320,15 +307,15 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
   </div>
 </section>
 
-<!-- 튜토리얼 -->
+<!-- 튜토리얼 — × 기호 만나기 -->
 <section class="screen" id="scrTut">
   <div class="topbar">
-    <div class="title">🧺 사용법 배우기</div>
+    <div class="title">✖️ × 기호 만나기</div>
     <div class="prog" id="pgTut"></div>
     <button class="spk" id="spkTut">🔇</button>
   </div>
   <div class="vbody">
-    <div class="instrTxt">사과를 <b style="color:#ffd23f;">3개씩</b> 콕콕 눌러 묶어 보세요!</div>
+    <div class="instrTxt">사과를 <b style="color:#ffd23f;">3개씩</b> 묶어 보세요!</div>
     <div class="picCard">
       <div class="gridwrap">
         <div class="objGrid" id="tutGrid"></div>
@@ -340,9 +327,8 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
       <div class="cnNum" id="tutCount">0</div>
       <div class="cnDots" id="tutDots"></div>
     </div>
-    <div class="conceptCard" id="tutConcept">
-      <span class="c1">3</span>씩 <span class="fill" id="tutBun">?</span>묶음 = <span class="c1">3</span>의 <span class="fill" id="tutTimes">?</span>배
-    </div>
+    <div class="addEqCard" id="tutAdd"></div>
+    <div class="mulEqCard" id="tutMul"></div>
     <div class="actionRow">
       <button class="btn btn-go" id="tutGo" disabled>이해했어요, 학습 시작!</button>
     </div>
@@ -352,122 +338,98 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 <!-- 사전 녹음 -->
 <section class="screen" id="scrPre" style="align-items:center;justify-content:center;gap:12px;">
   <div class="recnote pre" style="width:760px;">📌 활동 전 녹음이에요!<br>
-    지금 알고 있는 만큼만 말해도 괜찮아요. <span style="color:#7b3fc2;">활동 후 다시 녹음해서 비교해 볼 거예요!</span> 🌱</div>
-  <div class="instrTxt">"몇 배"가 뭔지 아는 만큼 말해 보세요</div>
+    지금 알고 있는 만큼만 말해도 괜찮아요. <span style="color:#ff6b35;">활동 후 다시 녹음해서 비교해 볼 거예요!</span> 🌱</div>
+  <div class="instrTxt">"곱셈식"이 뭔지 아는 만큼 말해 보세요</div>
   <div id="preRec"></div>
 </section>
 
-<!-- 동기유발 — 시각화 강화 -->
+<!-- 동기유발 — 더하기 vs 곱셈 -->
 <section class="screen" id="scrMot">
   <div class="topbar">
-    <div class="title">🍬 누가 얼마나 더 많아?</div>
+    <div class="title">🤔 더하기 vs 곱셈</div>
     <div class="prog" id="pgMot"></div>
     <button class="spk" id="spkMot">🔇</button>
   </div>
   <div class="vbody">
-    <div class="instrTxt">두 친구의 사탕 개수를 두 가지 방법으로 비교해 봐요</div>
-    <div class="friends" id="motFriends"></div>
+    <div class="instrTxt">접시 4개에 사과가 3개씩. <b>두 가지 방법</b>으로 모두 몇 개인지 세 봐요!</div>
+    <div class="motTable" id="motTable"></div>
     <div style="display:flex;gap:14px;">
-      <button class="btn btn-blue" id="motBtn1">➕ 몇 개 더 많은지 보기</button>
-      <button class="btn btn-pink" id="motBtn2">✖️ 몇 배인지 보기</button>
+      <button class="btn btn-blue" id="motBtn1">➕ 더하기로 세기</button>
+      <button class="btn btn-pink" id="motBtn2">✖️ 곱셈으로 세기</button>
     </div>
     <div class="motMsg add" id="motMsg1">버튼을 눌러 봐요!</div>
     <div class="motMsg mul" id="motMsg2"></div>
-    <div class="actionRow">
-      <button class="btn btn-go" id="motNext" style="display:none;">다음으로 ➡️</button>
-    </div>
   </div>
 </section>
 
-<!-- 이산량 묶기 -->
-<section class="screen" id="scrBundle">
+<!-- 곱셈식 만들기 (메인) -->
+<section class="screen" id="scrMul">
   <div class="topbar">
-    <div class="title" id="bdTitle">🧺 묶음 = 배</div>
-    <div class="prog" id="pgBundle"></div>
-    <button class="spk" id="spkBd">🔇</button>
+    <div class="title" id="mulTitle">✖️ 곱셈식 만들기</div>
+    <div class="prog" id="pgMul"></div>
+    <button class="spk" id="spkMul">🔇</button>
   </div>
   <div class="vbody">
-    <div class="instrTxt" id="bdInstr"></div>
+    <div class="instrTxt" id="mulInstr"></div>
     <div class="picCard">
       <div class="gridwrap">
-        <div class="objGrid" id="bdGrid"></div>
-        <svg class="ringSvg" id="bdSvg"></svg>
+        <div class="objGrid" id="mulGrid"></div>
+        <svg class="ringSvg" id="mulSvg"></svg>
       </div>
     </div>
     <div class="counterCard">
       <div class="cnLbl">지금 짚은 개수</div>
-      <div class="cnNum" id="bdCount">0</div>
-      <div class="cnDots" id="bdDots"></div>
+      <div class="cnNum" id="mulCount">0</div>
+      <div class="cnDots" id="mulDots"></div>
     </div>
-    <div class="conceptCard" id="bdConcept"></div>
-    <div class="addLine" id="bdAdd"><span class="lbl">덧셈</span><span id="bdAddTxt">-</span></div>
+    <div class="addEqCard" id="mulAdd"></div>
+    <div class="mulEqCard" id="mulMul"></div>
     <div class="actionRow">
-      <button class="btn btn-skip" id="bdReset">↺ 다시</button>
-      <button class="btn btn-help" id="bdHelp">💡 도와줘</button>
-      <button class="btn btn-go" id="bdNext" style="display:none;">다음 ➡️</button>
+      <button class="btn btn-skip" id="mulReset">↺ 다시</button>
+      <button class="btn btn-help" id="mulHelp">💡 도와줘</button>
+      <button class="btn btn-go" id="mulNext" style="display:none;">다음 ➡️</button>
     </div>
   </div>
 </section>
 
-<!-- 막대 이어 붙이기 -->
-<section class="screen" id="scrBar">
+<!-- 같은 수, 여러 곱셈식 -->
+<section class="screen" id="scrMany">
   <div class="topbar">
-    <div class="title">📏 색 막대로 알아보는 배</div>
-    <div class="prog" id="pgBar"></div>
-    <button class="spk" id="spkBar">🔇</button>
+    <div class="title">🔄 12를 여러 곱셈식으로</div>
+    <div class="prog" id="pgMany"></div>
+    <button class="spk" id="spkMany">🔇</button>
   </div>
   <div class="vbody">
-    <div class="instrTxt" id="barInstr"></div>
-    <div class="barwrap" id="barArea"></div>
-    <div class="barCounter" id="barCounter">짧은 막대를 <b style="color:#e0556a;">0</b>번 이어 붙였어요</div>
-    <div class="conceptCard" id="barConcept"></div>
-    <div class="actionRow">
-      <button class="btn btn-blue" id="barAdd">🔁 한 번 더 이어 붙이기</button>
-      <button class="btn btn-skip" id="barReset">↺ 처음부터</button>
-      <button class="btn btn-go" id="barNext" style="display:none;">다음 ➡️</button>
-    </div>
-  </div>
-</section>
-
-<!-- 같은 수, 다른 배 — 키패드 -->
-<section class="screen" id="scrSame">
-  <div class="topbar">
-    <div class="title">🔄 같은 수, 다른 배</div>
-    <div class="prog" id="pgSame"></div>
-    <button class="spk" id="spkSame">🔇</button>
-  </div>
-  <div class="vbody">
-    <div class="instrTxt">🍪 쿠키 <b style="color:#ffd23f;">12개</b> — <b>2, 3, 4, 5, 6, 12</b> 몇 개씩 묶을 수 있을까요?</div>
+    <div class="instrTxt">🍪 쿠키 <b style="color:#ffd23f;">12개</b>로 만들 수 있는 곱셈식을 모두 찾아 봐요</div>
     <div class="picCard">
       <div class="gridwrap">
-        <div class="objGrid" id="sameGrid"></div>
-        <svg class="ringSvg" id="sameSvg"></svg>
+        <div class="objGrid" id="manyGrid"></div>
+        <svg class="ringSvg" id="manySvg"></svg>
       </div>
     </div>
-    <div class="conceptCard" id="sameConcept">아래 숫자를 눌러서 시도해 봐요!</div>
-    <div class="keypadH" id="sameKeypad"></div>
+    <div class="mulBoard" id="manyBoard"></div>
+    <div class="keypadH" id="manyKeypad"></div>
     <div class="actionRow">
-      <button class="btn btn-go" id="sameNext" style="display:none;">다음 ➡️</button>
+      <button class="btn btn-go" id="manyNext" style="display:none;">다음 ➡️</button>
     </div>
   </div>
 </section>
 
-<!-- 도전 — 0~9 일자 키패드 -->
+<!-- 도전 -->
 <section class="screen" id="scrChal">
   <div class="topbar">
-    <div class="title">⏱️ 도전! 몇의 몇 배</div>
+    <div class="title">⏱️ 도전! 곱셈식 채우기</div>
     <div class="prog" id="pgChal"></div>
     <button class="spk" id="spkChal">🔇</button>
   </div>
   <div class="vbody">
-    <div class="instrTxt">그림을 보고 빈칸을 채워 보세요</div>
+    <div class="instrTxt">그림을 보고 곱셈식 <b style="color:#ffd23f;">○ × ○ = ○</b>를 채워 봐요</div>
     <div class="picCard">
       <div class="gridwrap">
         <div class="objGrid" id="chalGrid"></div>
         <svg class="ringSvg" id="chalSvg"></svg>
       </div>
     </div>
-    <div class="conceptCard" id="chalConcept"></div>
     <div class="kdisp" id="chalDisp"></div>
     <div class="keypadLinear" id="chalKey"></div>
   </div>
@@ -477,16 +439,16 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 <section class="screen" id="scrPost" style="align-items:center;justify-content:center;gap:10px;">
   <div class="recnote post" style="width:760px;">🌟 활동 후 녹음이에요!<br>
     처음과 비교해서 새롭게 알게 된 점을 말해 주세요. 🌱</div>
-  <div class="instrTxt">"몇의 몇 배"에 대해 새로 알게 된 점은?</div>
+  <div class="instrTxt">"곱셈식"에 대해 새로 알게 된 점은?</div>
   <div id="postRec"></div>
 </section>
 
 <!-- 수료증 -->
 <section class="screen" id="scrCert">
   <div class="cert">
-    <h2>🏅 몇의 몇 배 탐험 수료증 🏅</h2>
+    <h2>🏅 곱셈식 만들기 수료증 🏅</h2>
     <div class="name" id="certName"></div>
-    <div style="font-size:17px;font-weight:800;color:#5b7585;">위 어린이는 몇 묶음과 몇 배의 관계를 멋지게 탐험했습니다.</div>
+    <div style="font-size:17px;font-weight:800;color:#5b7585;">위 어린이는 곱셈식을 멋지게 만들었습니다.</div>
     <div class="compare">
       <div class="cmp pre"><h4 style="color:#1c3f6e;">💡 활동 전</h4><p id="certPre"></p></div>
       <div class="cmp post"><h4 style="color:#13573c;">🌟 활동 후</h4><p id="certPost"></p></div>
@@ -514,13 +476,13 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
   </div>
 </section>
 
-<!-- 동기유발 결과 모달 -->
+<!-- 동기유발 모달 -->
 <div class="ov" id="ovMot"><div class="pop">
   <h2>🤔 두 가지 방법!</h2>
   <div class="popResLine add" id="motResAdd"></div>
   <div class="popResLine mul" id="motResMul"></div>
   <div style="font-size:18px;color:#5b7585;font-weight:800;margin-top:10px;">
-    오늘은 <b style="color:#e0556a;">✖️ 배로 비교</b>하는 법을 배워 봐요!</div>
+    오늘은 <b style="color:#ff6b35;">✖️ 곱셈식</b>으로 빠르게 쓰는 법을 배워 봐요!</div>
   <button class="btn btn-go" id="motModalGo" style="margin-top:14px;">알겠어요, 다음으로 ➡️</button>
 </div></div>
 
@@ -545,19 +507,16 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SVGNS='http://www.w3.org/2000/svg';
 const stage=$('#stage');
 
-/* 반응형 scale */
 function fit(){const s=Math.min(innerWidth/1280,innerHeight/800);
   stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit);fit();
 
-/* 조사 */
 function josa(w,withB,withoutB){
   if(!w)return '';const last=w.charCodeAt(w.length-1);
   if(last<0xAC00||last>0xD7A3)return w+withoutB;
   return w+(((last-0xAC00)%28)!==0?withB:withoutB);}
 const eul=w=>josa(w,'을','를');
 
-/* 장식 */
 (function(){const d=$('#decor');
   for(let i=0;i<3;i++){const c=document.createElement('div');c.className='cloud';c.textContent='☁️';
     c.style.top=(16+i*18)+'px';c.style.animationDuration=(30+i*5)+'s';
@@ -566,14 +525,12 @@ const eul=w=>josa(w,'을','를');
     t.style.top=(Math.random()*740)+'px';t.style.left=(Math.random()*1230)+'px';
     t.style.animationDelay=(Math.random()*2.4)+'s';d.appendChild(t);}})();
 
-/* 이름 */
 const NAMES=['가은','나래','다온','라엘','민준','서아','수호','시우','예준','지아','하린','현우'];
 const sel=$('#nameSel');NAMES.forEach(n=>{const o=document.createElement('option');o.textContent=n;sel.appendChild(o);});
 
-let S={name:'',helpUsed:0,stickers:0,stars:0,preText:'',postText:'',bundlesDone:0,barsDone:0,sameSuccess:0,chalRight:0};
+let S={name:'',helpUsed:0,stickers:0,stars:0,preText:'',postText:'',mulDone:0,manyFound:0,chalRight:0};
 let speaker=false;
 
-/* TTS */
 let voice=null;
 function pickVoice(){const v=speechSynthesis.getVoices();
   voice=v.find(x=>x.lang==='ko-KR'&&x.name.toLowerCase().includes('google')&&!x.localService)
@@ -604,7 +561,6 @@ function progress(box,n,cur){box.innerHTML='';for(let i=0;i<n;i++){const d=docum
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';
   clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',1800);}
 
-/* 폭죽 */
 const cv=$('#confetti'),cx=cv.getContext('2d');cv.width=1280;cv.height=800;
 let parts=[];
 function confetti(){const c=['#ffd23f','#ff6b81','#4aa3ff','#5cc24a','#b07bff','#ff9a3c'];
@@ -615,14 +571,12 @@ function confetti(){const c=['#ffd23f','#ff6b81','#4aa3ff','#5cc24a','#b07bff','
     cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;
     cx.fillRect(-p.s/2,-p.s/2,p.s,p.s);cx.restore();});requestAnimationFrame(loop);})();
 
-/* 숫자 BURST — 묶음 크기 숫자를 효과음과 함께 보여줌 */
 const RINGCOL=['#ef4444','#22c55e','#a855f7','#f97316','#14b8a6','#ec4899'];
 function numBurst(cx2,cy2,num,colorIdx){
   const color=RINGCOL[(colorIdx||0)%6];
   const t=document.createElement('div');t.className='numBurst';
   t.textContent=num;t.style.left=cx2+'px';t.style.top=cy2+'px';t.style.color=color;
   stage.appendChild(t);setTimeout(()=>t.remove(),1500);
-  // 별 8개 방사형
   const ems=['⭐','✨','🌟','💫','⭐','✨','💖','🌟'];
   for(let i=0;i<8;i++){
     const s=document.createElement('div');s.className='sparkle';s.textContent=ems[i];
@@ -634,12 +588,19 @@ function numBurst(cx2,cy2,num,colorIdx){
     s.style.animation='fly 1.2s cubic-bezier(.2,.8,.3,1) forwards';
     stage.appendChild(s);setTimeout(()=>s.remove(),1300);
   }
-  // 효과음: num만큼 상승음 + 마무리 화음
   for(let i=0;i<Math.min(num,8);i++) setTimeout(()=>tone(523+i*70,.09),i*95);
   setTimeout(()=>{tone(880,.2);tone(1320,.28);},num*95+30);
 }
 
-/* SVG 동그라미 */
+/* × 기호 BURST */
+function opBurst(cx2,cy2){
+  const t=document.createElement('div');t.className='opBurst';
+  t.textContent='×';t.style.left=cx2+'px';t.style.top=cy2+'px';
+  stage.appendChild(t);setTimeout(()=>t.remove(),1600);
+  tone(523,.1);setTimeout(()=>tone(659,.1),100);setTimeout(()=>tone(784,.15),200);
+  setTimeout(()=>{tone(1047,.25);tone(1318,.25);},340);
+}
+
 function sizeSvg(svg,grid){svg.setAttribute('width',grid.clientWidth);
   svg.setAttribute('height',grid.clientHeight);
   svg.setAttribute('viewBox',`0 0 ${grid.clientWidth} ${grid.clientHeight}`);}
@@ -661,7 +622,6 @@ function drawRing(svg,objs,colorIdx){
   return el;
 }
 
-/* 카운터 */
 function setCounter(numEl,dotsEl,n,total){
   numEl.textContent=n;
   numEl.classList.remove('bump');void numEl.offsetWidth;numEl.classList.add('bump');
@@ -669,13 +629,34 @@ function setCounter(numEl,dotsEl,n,total){
   for(let i=0;i<total;i++){const d=document.createElement('div');d.className='d'+(i<n?' on':'');dotsEl.appendChild(d);}
 }
 
-/* 그림 중심 좌표 (stage 1280×800 기준) */
 function centerOf(el){
   const r=el.getBoundingClientRect(),sr=stage.getBoundingClientRect();
   return [(r.left+r.width/2-sr.left)*(1280/sr.width),(r.top+r.height/2-sr.top)*(800/sr.height)];
 }
 
-/* 녹음기 */
+/* 덧셈식 카드 갱신 */
+function renderAddEq(card,size,bundleN){
+  if(bundleN===0){card.classList.remove('on');return;}
+  card.classList.add('on');
+  let html='<span style="font-size:14px;font-weight:800;color:#1c3f6e;background:#4aa3ff;color:#fff;padding:2px 10px;border-radius:999px;margin-right:6px;">덧셈식</span>';
+  for(let i=0;i<bundleN;i++){
+    html+=`<span class="num cg${(i%6)+1}">${size}</span>`;
+    if(i<bundleN-1)html+='<span style="color:#4aa3ff;">+</span>';
+  }
+  html+=`<span style="color:#888;"> = </span><span class="num" style="color:#d68a00;">${size*bundleN}</span>`;
+  card.innerHTML=html;
+}
+
+/* 곱셈식 카드 갱신 */
+function renderMulEq(card,size,bundleN,withSmall){
+  if(bundleN===0){card.classList.remove('on');return;}
+  card.classList.add('on');
+  let html='<span style="font-size:14px;font-weight:800;color:#fff;background:#ff6b35;padding:2px 10px;border-radius:999px;margin-right:6px;">곱셈식</span>';
+  html+=`<span class="a">${size}</span><span class="x">×</span><span class="b">${bundleN}</span><span class="eq">=</span><span class="tot">${size*bundleN}</span>`;
+  if(withSmall)html+=`<span class="small">(${size}이 ${bundleN}번)</span>`;
+  card.innerHTML=html;
+}
+
 function buildRecorder(host,opts){
   host.innerHTML='';const w=document.createElement('div');w.className='recwrap';
   w.innerHTML=`
@@ -749,11 +730,10 @@ function initTut(){
   for(let i=0;i<9;i++){const o=document.createElement('div');o.className='obj';o.textContent='🍎';
     grid.appendChild(o);o.onclick=()=>tutClick(o);}
   $('#tutSvg').innerHTML='';tutPicked=[];tutBundles=0;
-  $('#tutBun').textContent='?';$('#tutBun').classList.remove('on');
-  $('#tutTimes').textContent='?';$('#tutTimes').classList.remove('on');
+  $('#tutAdd').classList.remove('on');$('#tutMul').classList.remove('on');
   $('#tutGo').disabled=true;
   setCounter($('#tutCount'),$('#tutDots'),0,3);
-  say('사과를 3개씩 묶어 보세요!');
+  say('사과를 3개씩 묶어 보세요.');
 }
 function tutClick(o){
   if(o.dataset.b)return;
@@ -768,15 +748,20 @@ function tutClick(o){
     tutPicked.forEach(x=>{x.dataset.b='1';x.classList.remove('pick');x.classList.add('bundled','cg'+(bi+1));});
     tutBundles++;tutPicked=[];
     const [cx,cy]=centerOf(grid);
-    // ★ 짠! 대신 묶음 크기 숫자
     numBurst(cx,cy,3,bi);
     setCounter($('#tutCount'),$('#tutDots'),0,3);
-    $('#tutBun').textContent=tutBundles;$('#tutBun').classList.add('on');
-    $('#tutTimes').textContent=tutBundles;$('#tutTimes').classList.add('on');
-    say(`${tutBundles}묶음, ${tutBundles}배!`);
+    renderAddEq($('#tutAdd'),3,tutBundles);
+    say(`${tutBundles}묶음!`);
     if(tutBundles===3){
-      setTimeout(()=>{confetti();toast('3씩 3묶음 = 3의 3배! 🎉');},800);
-      $('#tutGo').disabled=false;
+      setTimeout(()=>{
+        // × 기호 등장!
+        const [cx2,cy2]=centerOf($('#tutAdd'));
+        opBurst(cx2,cy2-80);
+        renderMulEq($('#tutMul'),3,3,true);
+        confetti();
+        toast('3+3+3을 3×3으로 쓸 수 있어요!');
+        $('#tutGo').disabled=false;
+      },900);
     }
   }
 }
@@ -787,312 +772,241 @@ function buildPre(){
   buildRecorder($('#preRec'),{rating:false,onDone:t=>{S.preText=t||'(녹음 안 함)';startMot();}});
 }
 
-/* ================ 동기유발 — 시각화 강화 ================ */
+/* ================ 동기유발 ================ */
 let motOneDone=false,motGroupDone=false;
 function startMot(){
   show('scrMot');progress($('#pgMot'),1,0);motOneDone=false;motGroupDone=false;
-  const fr=$('#motFriends');fr.innerHTML='';
-  // 민준 3개, 연우 9개
-  const minjun={name:'민준',count:3,color:'#5fb6f0'},yeonwoo={name:'연우',count:9,color:'#f08a93'};
-  [minjun,yeonwoo].forEach((p,i)=>{
-    const c=document.createElement('div');c.className='friendCard';c.dataset.idx=i;
-    let candies='';for(let j=0;j<p.count;j++)candies+=`<span class="obj" data-i="${j}">🍬</span>`;
-    c.innerHTML=`<h3 style="color:${p.color};">${p.name}</h3>
-      <div class="candies">${candies}</div>
-      <div style="font-size:17px;font-weight:900;color:#5b7585;">사탕 ${p.count}개</div>`;
-    fr.appendChild(c);});
+  // 접시 4개에 사과 3개씩
+  const tbl=$('#motTable');tbl.innerHTML='';
+  for(let p=0;p<4;p++){
+    const row=document.createElement('div');row.className='plateRow';
+    let apples='';for(let a=0;a<3;a++)apples+=`<span class="obj">🍎</span>`;
+    row.innerHTML=`<div class="plateLbl">🍽️ 접시 ${p+1}</div><div class="plate">${apples}</div>`;
+    tbl.appendChild(row);
+  }
   $('#motBtn1').disabled=false;$('#motBtn2').disabled=false;
   $('#motMsg1').classList.remove('on');$('#motMsg1').textContent='버튼을 눌러 봐요!';$('#motMsg1').style.visibility='visible';
   $('#motMsg2').classList.remove('on');$('#motMsg2').textContent='';
-  $('#motNext').style.display='none';
-  say('민준이는 3개, 연우는 9개. 두 가지 방법으로 비교해 봐요.');
+  say('접시 4개에 사과가 3개씩.');
 }
 
-/* ➕ 더 많은 개수 보기 — 화면에서 실제로 시각화 */
+/* ➕ 더하기 — 차례로 세는 시각화 */
 $('#motBtn1').onclick=()=>{
   if(motOneDone)return;motOneDone=true;$('#motBtn1').disabled=true;
-  // 연우의 처음 3개와 민준의 3개를 짝지음 → 나머지 6개를 빨강 테두리로 강조
-  const yC=$$('#motFriends .friendCard:nth-child(2) .candies .obj');
-  let idx=3;
-  // 처음 3개는 짝지어졌다고 표시 (회색으로 흐리게)
-  for(let k=0;k<3;k++){yC[k].style.opacity='.4';}
+  const plates=$$('#motTable .plateRow');let p=0;
+  const eq=[];
+  $('#motMsg1').classList.add('on');$('#motMsg1').innerHTML='➕ 차례로 더해 봐요…';
   const iv=setInterval(()=>{
-    if(idx>=9){clearInterval(iv);
-      const [cx,cy]=centerOf($('#motFriends .friendCard:nth-child(2)'));
-      // ★ "6"이 빨간색으로 빵 튀어나옴
-      numBurst(cx,cy+20,6,0);
-      $('#motMsg1').innerHTML='➕ 연우는 민준이보다 <b style="color:#ef4444;">6개</b> 더 많아요! (9 − 3 = 6)';
-      $('#motMsg1').classList.add('on');
+    if(p>=4){clearInterval(iv);
+      const [cx,cy]=centerOf($('#motTable'));
+      numBurst(cx,cy+40,12,3);
+      $('#motMsg1').innerHTML=`➕ <b style="color:#4aa3ff;">${eq.join('+')} = 12</b> (4번 더해야 해요!)`;
       sndOk();motCheck();return;}
-    yC[idx].style.background='rgba(239,68,68,.4)';
-    yC[idx].style.border='3px solid #ef4444';
-    yC[idx].style.borderRadius='50%';
-    sndPop();idx++;
-  },220);
+    plates[p].style.background='#dff7d6';plates[p].style.borderRadius='12px';
+    eq.push('3');$('#motMsg1').innerHTML=`➕ ${eq.join(' + ')}${eq.length<4?' + …':''}`;
+    sndPop();p++;
+  },500);
 };
 
-/* ✖️ 몇 배인지 보기 — 3개씩 묶어서 색깔별로 시각화 */
+/* ✖️ 곱셈 — 한 번에! */
 $('#motBtn2').onclick=()=>{
   if(motGroupDone)return;motGroupDone=true;$('#motBtn2').disabled=true;
-  const yC=$$('#motFriends .friendCard:nth-child(2) .candies .obj');
-  const grpColors=['rgba(239,68,68,.4)','rgba(34,197,94,.4)','rgba(168,85,247,.4)'];
-  const grpBorders=['#ef4444','#22c55e','#a855f7'];
-  let g=0;
-  const iv=setInterval(()=>{
-    if(g>=3){clearInterval(iv);
-      const [cx,cy]=centerOf($('#motFriends .friendCard:nth-child(2)'));
-      // ★ "3"이 빵 튀어나옴 — 3배라는 의미를 직접 보여줌
-      numBurst(cx,cy+20,3,1);
-      $('#motMsg2').innerHTML='✖️ 연우는 민준이의 <b style="color:#22c55e;">3배</b>예요! (3개씩 3묶음)';
-      $('#motMsg2').classList.add('on');
-      sndOk();motCheck();return;}
-    for(let k=0;k<3;k++){
-      yC[g*3+k].style.background=grpColors[g];
-      yC[g*3+k].style.border=`3px solid ${grpBorders[g]}`;
-      yC[g*3+k].style.borderRadius='50%';
-    }
-    sndHop();g++;
-  },350);
+  const plates=$$('#motTable .plateRow');
+  plates.forEach((p,i)=>{setTimeout(()=>{p.style.background='#ffe9de';p.style.borderRadius='12px';sndHop();},i*150);});
+  setTimeout(()=>{
+    const [cx,cy]=centerOf($('#motTable'));
+    opBurst(cx,cy);
+    setTimeout(()=>numBurst(cx,cy+40,12,3),400);
+    $('#motMsg2').classList.add('on');
+    $('#motMsg2').innerHTML='✖️ <b style="color:#ff6b35;">3 × 4 = 12</b> (한 줄로 끝!)';
+    sndOk();motCheck();
+  },700);
 };
 
 function motCheck(){
   if(motOneDone&&motGroupDone){
     setTimeout(()=>{
-      $('#motResAdd').innerHTML='➕ 더하기 방법: 연우가 <b>6개</b> 더 많아요';
-      $('#motResMul').innerHTML='✖️ 배 방법: 연우는 민준이의 <b>3배</b>예요';
+      $('#motResAdd').innerHTML='➕ 더하기: 3+3+3+3=12 (네 번이나 써야 해요!)';
+      $('#motResMul').innerHTML='✖️ 곱셈: 3×4=12 (한 줄로 끝!)';
       $('#ovMot').classList.add('on');confetti();
-    },700);
+    },800);
   }
 }
 $('#motModalGo').onclick=()=>{$('#ovMot').classList.remove('on');
   popup({
-    q:'"○의 ○배"는 어떤 방법이에요?',
+    q:'"곱셈식"은 어떤 더하기를 짧게 쓴 것이에요?',
     opts:[
-      {text:'✖️ 묶음으로<br>보는 방법',right:true,fb:'맞아요! 작은 양을 한 묶음으로 보고, 큰 양에 몇 묶음 들어가는지 보는 거예요!'},
-      {text:'➕ 몇 개 더 많은지<br>보는 방법',right:false,fb:'그건 "더하기 방법"이에요!'}
+      {text:'🔁 똑같은 수를<br>여러 번 더한 것',right:true,fb:'정답! 3+3+3+3처럼 같은 수가 반복될 때 곱셈으로 짧게 써요!'},
+      {text:'🔢 서로 다른 수를<br>여러 번 더한 것',right:false,fb:'다시 봐요! 3+3+3+3은 모두 같은 3이에요!'}
     ],
-    hints:['🍬 연우 9개를 어떻게 했나요?',
-      '민준이 3개를 한 묶음으로 보고, 연우에 몇 묶음 있는지 셌어요',
-      '👉 답은 "✖️ 묶음으로 보는 방법"이에요']
-  },()=>{bdIdx=0;startBundle();});};
+    hints:['3+3+3+3에서 더하는 수가 모두 같은가요, 다른가요?',
+      '모두 같은 3이에요! 같은 수를 반복할 때 곱셈으로 써요',
+      '👉 답은 "🔁 똑같은 수를 여러 번 더한 것"']
+  },()=>{mulIdx=0;startMul();});};
 
-/* ================ 이산량 묶기 ================ */
-const BD_PROBLEMS=[
+/* ================ 곱셈식 만들기 ================ */
+const A3_PROBLEMS=[
   {size:2,groups:4,emoji:'🍓',ctx:'딸기'},
-  {size:3,groups:3,emoji:'🍇',ctx:'포도'},
-  {size:4,groups:3,emoji:'🥕',ctx:'당근'}
+  {size:4,groups:3,emoji:'🥕',ctx:'당근'},
+  {size:5,groups:3,emoji:'🌼',ctx:'꽃'}
 ];
-let bdIdx=0,BD=null;
-function startBundle(){show('scrBundle');renderBundle();}
-function renderBundle(){
-  const P=BD_PROBLEMS[bdIdx];
-  BD={P,picked:[],bundles:[],done:false};
-  progress($('#pgBundle'),BD_PROBLEMS.length,bdIdx);
-  $('#bdTitle').textContent=`🧺 묶음 = 배 (${bdIdx+1}/${BD_PROBLEMS.length})`;
-  $('#bdInstr').innerHTML=`${eul(P.ctx)} <b style="color:#ffd23f;">${P.size}개씩</b> 콕콕 묶어 보세요!`;
-  updateBdConcept(0,0);
-  $('#bdAdd').classList.remove('on');$('#bdAddTxt').textContent='-';
-  $('#bdNext').style.display='none';
-  const grid=$('#bdGrid'),svg=$('#bdSvg');
+let mulIdx=0,MUL=null;
+function startMul(){show('scrMul');renderMul();}
+function renderMul(){
+  const P=A3_PROBLEMS[mulIdx];
+  MUL={P,picked:[],bundles:[],done:false};
+  progress($('#pgMul'),A3_PROBLEMS.length,mulIdx);
+  $('#mulTitle').textContent=`✖️ 곱셈식 만들기 (${mulIdx+1}/${A3_PROBLEMS.length})`;
+  $('#mulInstr').innerHTML=`${eul(P.ctx)} <b style="color:#ffd23f;">${P.size}개씩</b> 묶고, 곱셈식을 만들어 봐요!`;
+  $('#mulAdd').classList.remove('on');$('#mulMul').classList.remove('on');
+  $('#mulNext').style.display='none';
+  const grid=$('#mulGrid'),svg=$('#mulSvg');
   grid.style.gridTemplateColumns=`repeat(${P.size},76px)`;grid.innerHTML='';svg.innerHTML='';
   for(let i=0;i<P.size*P.groups;i++){
     const o=document.createElement('div');o.className='obj';o.textContent=P.emoji;o.dataset.b='-1';
-    grid.appendChild(o);o.onclick=()=>bdClick(o);}
-  setCounter($('#bdCount'),$('#bdDots'),0,P.size);
+    grid.appendChild(o);o.onclick=()=>mulClick(o);}
+  setCounter($('#mulCount'),$('#mulDots'),0,P.size);
   say(`${eul(P.ctx)} ${P.size}개씩 묶어 봐요.`);
 }
-function updateBdConcept(bcnt,total){
-  const P=BD.P;
-  // 색깔 매칭 — 마지막 완성된 묶음의 색
-  const cIdx=Math.max(1,bcnt);
-  $('#bdConcept').innerHTML=
-    `<span class="c${cIdx}">${P.size}</span>씩 `+
-    `<span class="fill ${bcnt>0?'on':''}">${bcnt||'?'}</span>묶음 = `+
-    `<span class="c${cIdx}">${P.size}</span>의 `+
-    `<span class="fill ${bcnt>0?'on':''}">${bcnt||'?'}</span>배 = `+
-    `<span class="fill gold ${total>0?'on':''}">${total||'?'}</span>`;
+function mulClick(o){
+  if(MUL.done||o.dataset.b!=='-1')return;
+  if(o.classList.contains('pick')){o.classList.remove('pick');MUL.picked=MUL.picked.filter(x=>x!==o);
+    setCounter($('#mulCount'),$('#mulDots'),MUL.picked.length,MUL.P.size);sndPop();return;}
+  o.classList.add('pick');MUL.picked.push(o);sndPop();
+  setCounter($('#mulCount'),$('#mulDots'),MUL.picked.length,MUL.P.size);
+  if(MUL.picked.length===MUL.P.size)mulClose();
 }
-function bdClick(o){
-  if(BD.done||o.dataset.b!=='-1')return;
-  if(o.classList.contains('pick')){o.classList.remove('pick');BD.picked=BD.picked.filter(x=>x!==o);
-    setCounter($('#bdCount'),$('#bdDots'),BD.picked.length,BD.P.size);sndPop();return;}
-  o.classList.add('pick');BD.picked.push(o);sndPop();
-  setCounter($('#bdCount'),$('#bdDots'),BD.picked.length,BD.P.size);
-  if(BD.picked.length===BD.P.size)bdClose();
-}
-function bdClose(){
-  const grid=$('#bdGrid'),svg=$('#bdSvg');sizeSvg(svg,grid);
-  const bi=BD.bundles.length;
-  drawRing(svg,BD.picked,bi);
-  BD.picked.forEach(o=>{o.dataset.b=bi;o.classList.remove('pick');o.classList.add('bundled','cg'+(bi+1));});
-  BD.bundles.push(BD.picked);BD.picked=[];
-  const n=BD.bundles.length,total=n*BD.P.size;
-  // ★ 묶음 크기 숫자가 빵 튀어나옴 (색깔 매칭)
+function mulClose(){
+  const grid=$('#mulGrid'),svg=$('#mulSvg');sizeSvg(svg,grid);
+  const bi=MUL.bundles.length;
+  drawRing(svg,MUL.picked,bi);
+  MUL.picked.forEach(o=>{o.dataset.b=bi;o.classList.remove('pick');o.classList.add('bundled','cg'+(bi+1));});
+  MUL.bundles.push(MUL.picked);MUL.picked=[];
+  const n=MUL.bundles.length;
   const [cx,cy]=centerOf(grid);
-  numBurst(cx,cy,BD.P.size,bi);
-  setCounter($('#bdCount'),$('#bdDots'),0,BD.P.size);
-  updateBdConcept(n,total);
-  const plus=new Array(n).fill(BD.P.size).join(' + ');
-  $('#bdAddTxt').innerHTML=`${plus} = <b style="color:#ffd23f;">${total}</b>`;
-  $('#bdAdd').classList.add('on');
-  say(`${BD.P.size}! ${n}묶음, ${BD.P.size}의 ${n}배.`);
-  if(n===BD.P.groups){
-    BD.done=true;S.bundlesDone++;
-    $('#bdInstr').innerHTML=`🎉 ${BD.P.size}씩 ${n}묶음 = ${BD.P.size}의 ${n}배 = 모두 ${total}!`;
-    $('#bdNext').style.display='inline-block';
-    setTimeout(confetti,1000);
+  numBurst(cx,cy,MUL.P.size,bi);
+  setCounter($('#mulCount'),$('#mulDots'),0,MUL.P.size);
+  renderAddEq($('#mulAdd'),MUL.P.size,n);
+  say(`${MUL.P.size}!`);
+  if(n===MUL.P.groups){
+    MUL.done=true;S.mulDone++;
+    setTimeout(()=>{
+      // × 기호 등장
+      const [cx2,cy2]=centerOf($('#mulAdd'));
+      opBurst(cx2,cy2-50);
+      renderMulEq($('#mulMul'),MUL.P.size,MUL.P.groups,true);
+      $('#mulInstr').innerHTML=`🎉 <b>${MUL.P.size}×${MUL.P.groups}=${MUL.P.size*MUL.P.groups}</b> 곱셈식 완성!`;
+      $('#mulNext').style.display='inline-block';
+      setTimeout(confetti,500);
+    },1000);
   }
 }
-$('#bdReset').onclick=()=>renderBundle();
-$('#bdHelp').onclick=()=>{S.helpUsed++;toast(`💡 ${BD.P.size}개씩 콕콕 짚어요!`);};
-$('#bdNext').onclick=()=>{
-  bdIdx++;
-  if(bdIdx===2){
+$('#mulReset').onclick=()=>renderMul();
+$('#mulHelp').onclick=()=>{S.helpUsed++;toast(`💡 ${MUL.P.size}개씩 콕콕 짚어요!`);};
+$('#mulNext').onclick=()=>{
+  mulIdx++;
+  if(mulIdx===2){
     popup({
-      q:'몇 묶음과 몇 배는 어떤 관계인가요?',
+      q:'곱셈식 "3×4"에서 3과 4는 무엇을 뜻해요?',
       opts:[
-        {text:'🤝 같은 뜻이에요',right:true,fb:'딩동댕! 2씩 3묶음 = 2의 3배. 같은 뜻!'},
-        {text:'🔀 서로 다른 수예요',right:false,fb:'다시 봐요! 묶음 수와 배 수가 같이 변했죠?'}
+        {text:'🍓 3은 한 묶음 개수,<br>4는 묶음의 수',right:true,fb:'정답! 3×4 = 한 묶음에 3개 × 4묶음 = 12개'},
+        {text:'🔢 3은 첫 번째 수,<br>4는 두 번째 수',right:false,fb:'각 수에는 뜻이 있어요. 그림을 다시 봐요!'}
       ],
-      hints:['한 묶음 만들 때마다 묶음 수와 배 수가 어떻게 됐어요?',
-        '같이 1, 2, 3… 같은 숫자로 올라갔어요!',
-        '👉 답은 "🤝 같은 뜻이에요"']
-    },()=>startBundle());
-  }else if(bdIdx>=BD_PROBLEMS.length){barIdx=0;startBar();}
-  else startBundle();
+      hints:['그림에서 3은 무엇이었나요? 한 묶음의 개수예요',
+        '그림에서 4는 무엇이었나요? 묶음의 수예요',
+        '👉 답은 "🍓 3은 한 묶음 개수, 4는 묶음의 수"']
+    },()=>startMul());
+  }else if(mulIdx>=A3_PROBLEMS.length){startMany();}
+  else startMul();
 };
 
-/* ================ 막대 이어 붙이기 ================ */
-const BAR_PROBLEMS=[
-  {baseLen:80,baseColor:'#e0556a',baseName:'🟥 빨간 막대',targColor:'#a06030',targName:'🟫 갈색 막대',mult:2},
-  {baseLen:60,baseColor:'#3a86ff',baseName:'🟦 파란 막대',targColor:'#5cc24a',targName:'🟩 초록 막대',mult:3},
-  {baseLen:50,baseColor:'#ffb01f',baseName:'🟨 노란 막대',targColor:'#9b6ddc',targName:'🟪 보라 막대',mult:4}
+/* ================ 같은 수, 여러 곱셈식 ================ */
+const MANY_OPTS=[
+  {a:2,b:6,label:'2×6'},
+  {a:3,b:4,label:'3×4'},
+  {a:4,b:3,label:'4×3'},
+  {a:6,b:2,label:'6×2'},
+  {a:1,b:12,label:'1×12'},
+  {a:12,b:1,label:'12×1'}
 ];
-let barIdx=0,BR=null;
-function startBar(){show('scrBar');renderBar();}
-function renderBar(){
-  const P=BAR_PROBLEMS[barIdx];
-  BR={P,reps:0,done:false};
-  progress($('#pgBar'),BAR_PROBLEMS.length,barIdx);
-  $('#barInstr').innerHTML=`${P.baseName}를 이어 붙여서 ${P.targName}와 똑같이 만들어 봐요!`;
-  $('#barArea').innerHTML=`
-    <div class="barrow"><div class="barlbl">${P.baseName}</div>
-      <div class="bar" style="width:${P.baseLen}px;background:${P.baseColor};">짧아요</div></div>
-    <div class="barrow"><div class="barlbl">✋ 내가 이어 붙인 것</div>
-      <div class="barrep" id="barRep"></div></div>
-    <div class="barrow"><div class="barlbl">${P.targName}</div>
-      <div class="bar" style="width:${P.baseLen*P.mult}px;background:${P.targColor};">길어요</div></div>`;
-  $('#barCounter').innerHTML=`${P.baseName}를 <b style="color:#e0556a;">0</b>번 이어 붙였어요`;
-  $('#barConcept').innerHTML=`<span style="color:${P.targColor};">${P.targName}</span>는 <span style="color:${P.baseColor};">${P.baseName}</span>의 <span class="fill">?</span>배`;
-  $('#barNext').style.display='none';
-  $('#barAdd').disabled=false;$('#barAdd').innerHTML=`🔁 ${P.baseName} 한 번 더 붙이기`;
-  say(`${P.baseName}를 이어 붙여 봐요.`);
+let manyFound=[];
+function startMany(){
+  show('scrMany');progress($('#pgMany'),1,0);manyFound=[];
+  // 보드 초기화
+  const board=$('#manyBoard');board.innerHTML='';
+  MANY_OPTS.forEach((o,i)=>{
+    const s=document.createElement('div');s.className='mulSlot';s.dataset.i=i;
+    s.innerHTML=`<span class="qm">?</span><span style="color:#aaa;font-size:18px;">번째</span>`;
+    board.appendChild(s);
+  });
+  // 키패드
+  const kp=$('#manyKeypad');kp.innerHTML='';
+  [1,2,3,4,6,12].forEach(n=>{const b=document.createElement('button');b.className='keyH';b.textContent=n;
+    b.onclick=()=>manyTry(n,b);kp.appendChild(b);});
+  // 초기 쿠키 12개
+  renderManyInitial();
+  $('#manyNext').style.display='none';
+  say('한 묶음 크기를 골라 봐요!');
 }
-$('#barAdd').onclick=()=>{
-  if(!BR||BR.done)return;
-  const P=BR.P;BR.reps++;
-  const seg=document.createElement('div');seg.className='bar rep';
-  seg.style.width=P.baseLen+'px';seg.style.background=P.baseColor;seg.textContent=BR.reps;
-  $('#barRep').appendChild(seg);sndHop();
-  $('#barCounter').innerHTML=`${P.baseName}를 <b style="color:#e0556a;">${BR.reps}</b>번 이어 붙였어요`;
-  say(String(BR.reps));
-  if(BR.reps===P.mult){
-    BR.done=true;$('#barAdd').disabled=true;S.barsDone++;
-    $('#barConcept').innerHTML=`<b style="color:${P.targColor};">${P.targName}</b>는 <b style="color:${P.baseColor};">${P.baseName}</b>의 <b style="color:#d68a00;font-size:30px;">${P.mult}배</b>예요!`;
-    $('#barNext').style.display='inline-block';
-    confetti();
-    // ★ 배수 숫자가 빵 튀어나옴
-    const [cx,cy]=centerOf($('#barArea'));
-    numBurst(cx,cy,P.mult,1);
-  }else if(BR.reps>P.mult){toast('이미 같아졌어요! ↺ 처음부터를 눌러요');}
-};
-$('#barReset').onclick=()=>renderBar();
-$('#barNext').onclick=()=>{
-  barIdx++;
-  if(barIdx>=BAR_PROBLEMS.length){
-    popup({
-      q:'"○배"는 어떤 뜻이에요?',
-      opts:[
-        {text:'📏 짧은 막대를 그만큼<br>이어 붙인 길이',right:true,fb:'정답! 3배 = 짧은 막대를 3번 이어 붙인 것!'},
-        {text:'➕ 짧은 막대에 그만큼<br>더한 길이',right:false,fb:'"배"는 더하기가 아니에요!'}
-      ],
-      hints:['빨간 막대를 3번 이어 붙였더니 어떻게 됐죠?',
-        '갈색과 똑같은 길이가 됐어요! 그래서 "3배"!',
-        '👉 답은 "📏 짧은 막대를 그만큼 이어 붙인 길이"']
-    },()=>startSame());
-  }else renderBar();
-};
-
-/* ================ 같은 수, 다른 배 (키패드) ================ */
-const SAME_TOTAL=12;
-const SAME_KEYS=[2,3,4,5,6,12];
-function startSame(){
-  show('scrSame');progress($('#pgSame'),1,0);S.sameSuccess=0;
-  const kp=$('#sameKeypad');kp.innerHTML='';
-  SAME_KEYS.forEach(n=>{const b=document.createElement('button');b.className='keyH';b.textContent=n;
-    b.onclick=()=>sameTry(n,b);kp.appendChild(b);});
-  renderSameInitial();
-  $('#sameConcept').innerHTML='아래 숫자를 눌러서 시도해 봐요!';
-  $('#sameNext').style.display='none';
-  say('쿠키 12개를 여러 가지로 묶어 봐요.');
+function renderManyInitial(){
+  const grid=$('#manyGrid');grid.style.gridTemplateColumns='repeat(12,46px)';grid.innerHTML='';
+  $('#manySvg').innerHTML='';
+  for(let i=0;i<12;i++){
+    const o=document.createElement('div');o.className='obj';o.style.width='42px';o.style.height='42px';o.style.fontSize='32px';
+    o.textContent='🍪';grid.appendChild(o);}
 }
-function renderSameInitial(){
-  const grid=$('#sameGrid');grid.style.gridTemplateColumns='repeat(12,54px)';grid.innerHTML='';
-  $('#sameSvg').innerHTML='';
-  for(let i=0;i<SAME_TOTAL;i++){
-    const o=document.createElement('div');o.className='obj small';o.textContent='🍪';grid.appendChild(o);}
-}
-function sameTry(n,btn){
-  const groups=Math.floor(SAME_TOTAL/n),rem=SAME_TOTAL%n;
-  const grid=$('#sameGrid'),svg=$('#sameSvg');grid.innerHTML='';svg.innerHTML='';
-  const cols=Math.min(n,SAME_TOTAL);
-  grid.style.gridTemplateColumns=`repeat(${cols},54px)`;
+function manyTry(n,btn){
+  if(12%n!==0){
+    btn.classList.add('no');
+    toast(`${n}로는 12를 똑같이 나눌 수 없어요`);sndNo();
+    return;
+  }
+  const groups=12/n;
+  // 슬롯 채우기 — a=n, b=groups → label "n×groups"
+  const matchIdx=MANY_OPTS.findIndex(o=>o.a===n&&o.b===groups);
+  if(matchIdx<0){toast('이미 찾았어요!');return;}
+  if(manyFound.includes(matchIdx)){toast('이미 찾았어요!');return;}
+  manyFound.push(matchIdx);
+  // 보드에 표시
+  const slot=$$('#manyBoard .mulSlot')[matchIdx];
+  slot.classList.add('done');
+  slot.innerHTML=`<span style="color:#ef4444;">${n}</span><span style="color:#ff6b35;">×</span><span style="color:#3a86ff;">${groups}</span><span style="color:#888;">=</span><span style="color:#d68a00;">12</span>`;
+  // 그림 재배치
+  const grid=$('#manyGrid'),svg=$('#manySvg');grid.innerHTML='';svg.innerHTML='';
+  // n=1일 때 cols=1이면 12행 세로로 쌓여 화면 초과 → 1열 12행 → 12열 1행으로
+  const cols=(n===1)?12:Math.min(n,12);
+  grid.style.gridTemplateColumns=`repeat(${cols},42px)`;
   const objs=[];
-  const totalBundled=groups*n;
-  for(let i=0;i<totalBundled;i++){
-    const o=document.createElement('div');o.className='obj small';o.textContent='🍪';
+  for(let i=0;i<12;i++){
+    const o=document.createElement('div');o.className='obj small';o.style.width='38px';o.style.height='38px';o.style.fontSize='28px';
+    o.textContent='🍪';
     o.classList.add('cg'+(Math.floor(i/n)%6+1));grid.appendChild(o);objs.push(o);}
-  for(let k=0;k<rem;k++){
-    const o=document.createElement('div');o.className='obj small remainder';o.textContent='🍪';
-    grid.appendChild(o);objs.push(o);}
   setTimeout(()=>{sizeSvg(svg,grid);
     for(let r=0;r<groups;r++)drawRing(svg,objs.slice(r*n,r*n+n),r);},200);
-  if(rem===0){
-    btn.classList.add('ok');btn.disabled=true;
-    let extra='';if(n===12)extra=' <b style="color:#d68a00;">(1배 = 그대로!)</b>';
-    $('#sameConcept').innerHTML=
-      `✅ <span class="c1">${n}</span>씩 <span class="fill on">${groups}</span>묶음 = `+
-      `<span class="c1">${n}</span>의 <span class="fill on">${groups}</span>배 = `+
-      `<span class="fill gold on">12</span>${extra}`;
-    sndOk();S.sameSuccess++;
-    setTimeout(()=>{const [cx,cy]=centerOf(grid);numBurst(cx,cy,n,0);},300);
-    if(n===12)say('12씩 1묶음! 12는 12의 1배. 그대로!');
-    else say(`12는 ${n}씩 ${groups}묶음. ${n}의 ${groups}배!`);
-  } else {
-    btn.classList.add('no');
-    $('#sameConcept').innerHTML=`😢 <b style="color:#e0556a;">${n}씩 묶으면 ${rem}개가 남아요!</b> 다른 수로 해 봐요`;
-    sndNo();say(`${n}씩은 ${rem}개가 남아요.`);
-  }
-  if(S.sameSuccess>=3&&$('#sameNext').style.display==='none'){
-    $('#sameNext').style.display='inline-block';
-    toast('여러 가지 배로 나타냈어요! 🎉');confetti();
+  btn.classList.add('ok');btn.disabled=true;
+  sndOk();S.manyFound++;
+  setTimeout(()=>{const [cx,cy]=centerOf(grid);opBurst(cx,cy);},200);
+  setTimeout(()=>{const [cx,cy]=centerOf(grid);numBurst(cx,cy+40,12,matchIdx);},700);
+  if(manyFound.length>=4&&$('#manyNext').style.display==='none'){
+    $('#manyNext').style.display='inline-block';
+    toast('여러 가지 곱셈식을 찾았어요! 🎉');confetti();
   }
 }
-$('#sameNext').onclick=()=>{
+$('#manyNext').onclick=()=>{
   popup({
-    q:'12는 모두 같은데, 왜 여러 가지 배로 나타낼 수 있을까요?',
+    q:'12는 모두 같은데, 왜 여러 곱셈식으로 쓸 수 있을까요?',
     opts:[
-      {text:'📏 묶음 한 개의<br>크기를 바꾸면<br>배도 달라져요',right:true,fb:'정답! 한 묶음 크기가 달라지면 배도 달라져요!'},
-      {text:'🔢 12가 매번<br>달라져서요',right:false,fb:'아니에요! 12는 그대로였어요!'}
+      {text:'📦 한 묶음 크기를 바꾸면<br>곱셈식도 달라져요',right:true,fb:'정답! 묶는 방법이 달라지면 곱셈식도 달라져요. 모두 12 = 같은 양!'},
+      {text:'🔢 12가 매번<br>달라져서요',right:false,fb:'아니에요. 12는 그대로였어요!'}
     ],
     hints:['12개는 항상 12개. 무엇이 달라졌나요?',
-      '한 묶음을 2개로 보면 6묶음(2의 6배), 3개로 보면 4묶음(3의 4배)…',
-      '👉 답은 "묶음 한 개의 크기를 바꾸면 배도 달라져요"']
+      '2개씩 묶으면 6묶음 → 2×6. 3개씩 묶으면 4묶음 → 3×4',
+      '👉 답은 "한 묶음 크기를 바꾸면 곱셈식도 달라져요"']
   },()=>startChal());
 };
 
-/* ================ 도전 — 0~9 일자 키패드 ================ */
-const CHAL=[
+/* ================ 도전 ================ */
+const A3_CHAL=[
   {size:3,groups:4,emoji:'🍪'},
   {size:5,groups:3,emoji:'🌟'},
   {size:4,groups:5,emoji:'🐟'}
@@ -1100,8 +1014,9 @@ const CHAL=[
 let chalIdx=0,CH=null;
 function startChal(){show('scrChal');chalIdx=0;S.chalRight=0;renderChal();}
 function renderChal(){
-  const P=CHAL[chalIdx];CH={P,cur:0,val:''};
-  progress($('#pgChal'),CHAL.length,chalIdx);
+  const P=A3_CHAL[chalIdx];
+  CH={P,slot:0,vals:['','','']};
+  progress($('#pgChal'),A3_CHAL.length,chalIdx);
   const grid=$('#chalGrid'),svg=$('#chalSvg');
   grid.style.gridTemplateColumns=`repeat(${P.size},56px)`;grid.innerHTML='';svg.innerHTML='';
   const objs=[];
@@ -1111,39 +1026,45 @@ function renderChal(){
     grid.appendChild(o);objs.push(o);}
   setTimeout(()=>{sizeSvg(svg,grid);
     for(let r=0;r<P.groups;r++)drawRing(svg,objs.slice(r*P.size,r*P.size+P.size),r);},100);
-  updateChalConcept();
-  $('#chalDisp').textContent='';
+  updateChalDisp();
   buildChalKey();
 }
-function updateChalConcept(){
-  const P=CH.P;
-  $('#chalConcept').innerHTML=
-    `<span class="c1">${P.size}</span>씩 `+
-    `<span class="fill ${CH.cur>0?'on':''}">${CH.cur>0?P.groups:'?'}</span>묶음 = `+
-    `<span class="c1">${P.size}</span>의 `+
-    `<span class="fill ${CH.cur>1?'on':''}">${CH.cur>1?(P.size*P.groups):'?'}</span>배`;
+function updateChalDisp(){
+  const v=CH.vals;
+  $('#chalDisp').innerHTML=
+    `<span class="slot ${CH.slot===0?'cur':v[0]?'fill':''}">${v[0]||'?'}</span>`+
+    `<span style="color:#ff6b35;">×</span>`+
+    `<span class="slot ${CH.slot===1?'cur':v[1]?'fill':''}">${v[1]||'?'}</span>`+
+    `<span style="color:#888;">=</span>`+
+    `<span class="slot ${CH.slot===2?'cur':v[2]?'fill':''}">${v[2]||'?'}</span>`;
 }
 function buildChalKey(){
   const kp=$('#chalKey');kp.innerHTML='';
   for(let i=0;i<=9;i++){const b=document.createElement('button');b.className='keyLin';b.textContent=i;
     b.onclick=()=>chalPress(String(i));kp.appendChild(b);}
   const del=document.createElement('button');del.className='keyLin act';del.textContent='←';
-  del.onclick=()=>{CH.val=CH.val.slice(0,-1);$('#chalDisp').textContent=CH.val;};kp.appendChild(del);
+  del.onclick=()=>{CH.vals[CH.slot]='';updateChalDisp();};kp.appendChild(del);
   const ok=document.createElement('button');ok.className='keyLin go';ok.textContent='✓';
   ok.onclick=chalCheck;kp.appendChild(ok);
 }
-function chalPress(n){if(CH.val.length<3){CH.val+=n;$('#chalDisp').textContent=CH.val;sndPop();}}
+function chalPress(n){
+  if(CH.vals[CH.slot].length<2){CH.vals[CH.slot]+=n;updateChalDisp();sndPop();}
+}
 function chalCheck(){
-  const P=CH.P,need=CH.cur===0?P.groups:P.size*P.groups;
-  if(+CH.val===need){
-    if(CH.cur===0){CH.cur=1;CH.val='';$('#chalDisp').textContent='';updateChalConcept();
-      sndOk();toast('① 정답! 이제 배 수를 입력해요');}
-    else{CH.cur=2;updateChalConcept();sndOk();confetti();S.chalRight++;
-      const [cx,cy]=centerOf($('#chalGrid'));numBurst(cx,cy,P.size*P.groups,2);
+  const P=CH.P;
+  const need=[P.size,P.groups,P.size*P.groups];
+  if(+CH.vals[CH.slot]===need[CH.slot]){
+    sndOk();
+    if(CH.slot<2){CH.slot++;updateChalDisp();toast(`${CH.slot}번째 정답!`);}
+    else{
+      S.chalRight++;confetti();
+      const [cx,cy]=centerOf($('#chalGrid'));
+      numBurst(cx,cy,need[2],2);
       setTimeout(()=>{chalIdx++;
-        if(chalIdx>=CHAL.length){show('scrPost');buildPost();}
-        else renderChal();},1100);}
-  }else{sndNo();toast('묶음 수를 다시 세어 봐요!');}
+        if(chalIdx>=A3_CHAL.length){show('scrPost');buildPost();}
+        else renderChal();},1200);
+    }
+  }else{sndNo();toast('다시 세어 봐요!');}
 }
 
 /* ================ 사후 녹음 ================ */
@@ -1194,35 +1115,34 @@ async function finishCert(){
   $('#certStk').textContent='🎁 스티커: '+S.stickers+'개';
   show('scrCert');confetti();
   try{let log=[];
-    try{const r=await window.storage.get('mult2:log');if(r)log=JSON.parse(r.value);}catch(e){}
+    try{const r=await window.storage.get('mult3:log');if(r)log=JSON.parse(r.value);}catch(e){}
     log.push({date:new Date().toLocaleDateString('ko-KR'),name:S.name,
-      bundles:S.bundlesDone,bars:S.barsDone,same:S.sameSuccess,chal:S.chalRight,
+      mul:S.mulDone,many:S.manyFound,chal:S.chalRight,
       help:S.helpUsed,stars:S.stars,stickers:S.stickers,
       pre:S.preText.slice(0,60),post:S.postText.slice(0,60)});
-    await window.storage.set('mult2:log',JSON.stringify(log));}catch(e){}
+    await window.storage.set('mult3:log',JSON.stringify(log));}catch(e){}
 }
 
 /* ================ 대시보드 ================ */
 async function openDash(){
   show('scrDash');let log=[];
-  try{const r=await window.storage.get('mult2:log');if(r)log=JSON.parse(r.value);}catch(e){}
+  try{const r=await window.storage.get('mult3:log');if(r)log=JSON.parse(r.value);}catch(e){}
   const mine=log.filter(x=>!S.name||x.name===S.name);
   const list=$('#dashList');list.innerHTML='';
   if(!mine.length)list.innerHTML='<div class="dashRow"><b>아직 기록이 없어요.</b><br><span>활동을 마치면 여기에 학습기록이 스스로 쌓여요! 🌱</span></div>';
   else[...mine].reverse().forEach(x=>{const d=document.createElement('div');d.className='dashRow';
     d.innerHTML=`<b>📅 ${x.date} · ${x.name}</b><br>
-      <span>🧺 묶음·배 ${x.bundles} · 📏 막대 ${x.bars} · 🔄 같은수 ${x.same} · ⏱️ 도전 ${x.chal} · 🎁 ${x.stickers}</span><br>
+      <span>✖️ 곱셈식 ${x.mul} · 🔄 같은수 ${x.many} · ⏱️ 도전 ${x.chal} · 🎁 ${x.stickers}</span><br>
       <span>🌱 활동 후: "${x.post||'-'}"</span>`;list.appendChild(d);});
-  const tb=mine.reduce((a,x)=>a+x.bundles,0),tba=mine.reduce((a,x)=>a+x.bars,0),
+  const tm=mine.reduce((a,x)=>a+x.mul,0),tn=mine.reduce((a,x)=>a+x.many,0),
     ts=mine.reduce((a,x)=>a+x.stickers,0);
   $('#dashKpi').innerHTML=`
     <div class="kpicard"><div class="n">${mine.length}</div><div class="l">활동한 날</div></div>
-    <div class="kpicard"><div class="n">${tb}</div><div class="l">묶음·배</div></div>
-    <div class="kpicard"><div class="n">${tba}</div><div class="l">막대</div></div>
+    <div class="kpicard"><div class="n">${tm}</div><div class="l">곱셈식</div></div>
+    <div class="kpicard"><div class="n">${tn}</div><div class="l">같은수</div></div>
     <div class="kpicard"><div class="n">${ts}</div><div class="l">스티커</div></div>`;
 }
 
-/* 시작 */
 $('#startBtn').onclick=async()=>{S.name=sel.value;
   try{await navigator.mediaDevices.getUserMedia({audio:true})
     .then(s=>s.getTracks().forEach(t=>t.stop()));}catch(e){}
@@ -1231,7 +1151,7 @@ $('#toDashBtn').onclick=()=>{S.name=sel.value;openDash();};
 $('#dashBack').onclick=()=>show(S.preText?'scrCert':'scrStart');
 $('#certDash').onclick=openDash;
 $('#certAgain').onclick=()=>{S={name:S.name,helpUsed:0,stickers:0,stars:0,preText:'',postText:'',
-  bundlesDone:0,barsDone:0,sameSuccess:0,chalRight:0};show('scrTut');initTut();};
+  mulDone:0,manyFound:0,chalRight:0};show('scrTut');initTut();};
 </script>
 </body>
 </html>
