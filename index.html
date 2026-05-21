@@ -504,6 +504,38 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 </div></div>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+/* ============== 🔗 APPS SCRIPT 백엔드 연결 ==============
+ * 1. Apps Script에서 code.gs 배포 → 웹앱 URL 받기
+ * 2. 그 URL을 아래 따옴표 안에 붙여넣기 (HTML 3개 파일 모두 같은 URL)
+ * 3. 비워두면 백엔드 호출 없이 브라우저에만 저장됨 (정상 동작)
+ */
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxW4qThxnT7HF0AiZ7wvVZUWUENWU9pX9ksGvr0ooBKqAAcoQbIdCRSu5jnRxp_y-BB/exec';
+
+async function postBackend(payload){
+  if(!BACKEND_URL) return null;
+  try{
+    const res=await fetch(BACKEND_URL,{
+      method:'POST',mode:'cors',redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+    return await res.json();
+  }catch(e){console.error('Backend error:',e);return null;}
+}
+async function uploadAudio(blob,phase,appNum){
+  if(!BACKEND_URL||!blob) return '';
+  try{
+    const base64=await new Promise((resolve,reject)=>{
+      const r=new FileReader();
+      r.onload=()=>resolve(String(r.result).split(',')[1]||'');
+      r.onerror=reject;r.readAsDataURL(blob);
+    });
+    const res=await postBackend({action:'saveAudio',base64,mime:blob.type||'audio/webm',
+      name:S.name,app:String(appNum),phase});
+    return (res&&res.ok)?res.url:'';
+  }catch(e){return '';}
+}
 const SVGNS='http://www.w3.org/2000/svg';
 const stage=$('#stage');
 
@@ -528,17 +560,37 @@ const eul=w=>josa(w,'을','를');
 const NAMES=['가은','나래','다온','라엘','민준','서아','수호','시우','예준','지아','하린','현우'];
 const sel=$('#nameSel');NAMES.forEach(n=>{const o=document.createElement('option');o.textContent=n;sel.appendChild(o);});
 
-let S={name:'',helpUsed:0,stickers:0,stars:0,preText:'',postText:'',mulDone:0,manyFound:0,chalRight:0};
+// 백엔드 학생명단 시트에서 동적으로 가져오기 (URL 있으면)
+(async()=>{
+  if(!BACKEND_URL) return;
+  const r=await postBackend({action:'getStudents'});
+  if(r&&r.ok&&Array.isArray(r.students)&&r.students.length>0){
+    sel.innerHTML='';
+    r.students.forEach(st=>{const o=document.createElement('option');o.textContent=st.name;sel.appendChild(o);});
+  }
+})();
+
+let S={name:'',helpUsed:0,stickers:0,stars:0,preText:'',postText:'',preAudioUrl:'',postAudioUrl:'',mulDone:0,manyFound:0,chalRight:0};
 let speaker=false;
 
 let voice=null;
 function pickVoice(){const v=speechSynthesis.getVoices();
-  voice=v.find(x=>x.lang==='ko-KR'&&x.name.toLowerCase().includes('google')&&!x.localService)
-    ||v.find(x=>x.lang==='ko-KR')||null;}
+  // 우선순위: 1) Google 클라우드 한국어  2) Wavenet/Neural2  3) Natural/Premium  4) 아무 ko-KR
+  voice =
+    v.find(x=>x.lang==='ko-KR' && x.name.toLowerCase().includes('google') && !x.localService) ||
+    v.find(x=>x.lang==='ko-KR' && /wavenet|neural2/i.test(x.name)) ||
+    v.find(x=>x.lang==='ko-KR' && /natural|premium|enhanced/i.test(x.name)) ||
+    v.find(x=>x.lang==='ko-KR') ||
+    null;
+}
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
 function say(t){if(!speaker||!('speechSynthesis'in window))return;
   speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
-  u.lang='ko-KR';u.rate=.96;if(voice)u.voice=voice;speechSynthesis.speak(u);}
+  // 갈라짐 방지 + 자연스러운 톤 (pitch 1.0 기본, rate 약간 느리게)
+  u.lang='ko-KR'; u.rate=0.92; u.pitch=1.0; u.volume=1.0;
+  if(voice) u.voice=voice;
+  speechSynthesis.speak(u);
+}
 
 let AC=null;
 function tone(f,d,type,vol){if(!speaker)return;try{AC=AC||new(AudioContext||webkitAudioContext)();
@@ -719,7 +771,7 @@ function buildRecorder(host,opts){
       next.textContent='✨ 칭찬 스티커 받기!';}
     play.style.display='none';redo.style.display='none';status.textContent='다시 녹음해요!';};
   next.onclick=()=>{if(opts.rating&&S.stars>0&&S.stars<=3&&next.textContent.includes('다시')){redo.onclick();return;}
-    opts.onDone(finalText.trim(),S.stars);};
+    opts.onDone(finalText.trim(),S.stars,blob);};
 }
 
 /* ================ 튜토리얼 ================ */
@@ -769,7 +821,7 @@ $('#tutGo').onclick=()=>{show('scrPre');buildPre();};
 
 /* ================ 사전 녹음 ================ */
 function buildPre(){
-  buildRecorder($('#preRec'),{rating:false,onDone:t=>{S.preText=t||'(녹음 안 함)';startMot();}});
+  buildRecorder($('#preRec'),{rating:false,onDone:async(t,_,blob)=>{S.preText=t||'(녹음 안 함)';S.preAudioUrl=await uploadAudio(blob,'pre',3);startMot();}});
 }
 
 /* ================ 동기유발 ================ */
@@ -1069,8 +1121,9 @@ function chalCheck(){
 
 /* ================ 사후 녹음 ================ */
 function buildPost(){
-  buildRecorder($('#postRec'),{rating:true,onDone:t=>{
+  buildRecorder($('#postRec'),{rating:true,onDone:async(t,_,blob)=>{
     S.postText=t||'(녹음 안 함)';S.stickers++;confetti();
+    S.postAudioUrl=await uploadAudio(blob,'post',3);
     setTimeout(finishCert,800);}});
 }
 
@@ -1121,6 +1174,13 @@ async function finishCert(){
       help:S.helpUsed,stars:S.stars,stickers:S.stickers,
       pre:S.preText.slice(0,60),post:S.postText.slice(0,60)});
     await window.storage.set('mult3:log',JSON.stringify(log));}catch(e){}
+  // Apps Script 백엔드에 학습기록 전송 (URL 비어 있으면 자동 skip)
+  postBackend({action:'saveRecord',name:S.name,app:'3',
+    preText:S.preText||'',postText:S.postText||'',
+    preAudioUrl:S.preAudioUrl||'',postAudioUrl:S.postAudioUrl||'',
+    stars:S.stars,stickers:S.stickers,hint:S.helpUsed,
+    learnDone:S.mulDone+S.manyFound,chalRight:S.chalRight,
+    sessionId:'sess_'+Date.now()});
 }
 
 /* ================ 대시보드 ================ */
@@ -1150,7 +1210,7 @@ $('#startBtn').onclick=async()=>{S.name=sel.value;
 $('#toDashBtn').onclick=()=>{S.name=sel.value;openDash();};
 $('#dashBack').onclick=()=>show(S.preText?'scrCert':'scrStart');
 $('#certDash').onclick=openDash;
-$('#certAgain').onclick=()=>{S={name:S.name,helpUsed:0,stickers:0,stars:0,preText:'',postText:'',
+$('#certAgain').onclick=()=>{S={name:S.name,helpUsed:0,stickers:0,stars:0,preText:'',postText:'',preAudioUrl:'',postAudioUrl:'',
   mulDone:0,manyFound:0,chalRight:0};show('scrTut');initTut();};
 </script>
 </body>
