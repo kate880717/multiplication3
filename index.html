@@ -222,26 +222,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2a1408;}
 .hintbox.show{display:block;}
 .popRow{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;}
 
-.recwrap{background:#fff;border-radius:28px;padding:18px 30px;display:flex;flex-direction:column;
+.recwrap{background:#fff;border-radius:24px;padding:18px 30px;display:flex;flex-direction:column;
   gap:12px;align-items:center;box-shadow:0 8px 22px rgba(0,0,0,.25);max-width:780px;}
-.recStatus{font-size:22px;font-weight:900;color:#1f4258;text-align:center;}
+.recStatus{font-size:20px;font-weight:900;color:#1f4258;text-align:center;min-height:24px;}
 .recBtnRow{display:flex;gap:12px;align-items:center;}
-.recnote{border-radius:20px;padding:14px 24px;font-size:22px;font-weight:800;text-align:center;line-height:1.4;}
-.recnote.pre{background:#e7f1ff;border:5px solid #8fb9e8;color:#1c3f6e;}
-.recnote.post{background:#e6f9f0;border:5px solid #7fd6b0;color:#13573c;}
-.micbtn{width:140px;height:140px;border-radius:50%;border:6px solid #fff;cursor:pointer;font-size:76px;
-  background:linear-gradient(180deg,#ff7d92,#e0455e);color:#fff;box-shadow:0 8px 0 #a8344a;}
+.recnote{border-radius:18px;padding:10px 22px;font-size:20px;font-weight:800;text-align:center;line-height:1.4;}
+.recnote.pre{background:#e7f1ff;border:4px solid #8fb9e8;color:#1c3f6e;}
+.recnote.post{background:#e6f9f0;border:4px solid #7fd6b0;color:#13573c;}
+.micbtn{width:120px;height:120px;border-radius:50%;border:5px solid #fff;cursor:pointer;font-size:60px;
+  background:linear-gradient(180deg,#ff7d92,#e0455e);color:#fff;box-shadow:0 6px 0 #a8344a;}
 .micbtn.rec{animation:pulse 1s infinite;background:linear-gradient(180deg,#ff4d6a,#c5283e);}
 @keyframes pulse{50%{transform:scale(1.1);}}
-.transbox{width:680px;min-height:88px;background:#f3f9fc;border:4px solid #cfe6ea;border-radius:16px;
-  padding:18px 22px;font-size:23px;color:#1f4258;font-weight:700;}
+.transbox{width:680px;min-height:56px;background:#f3f9fc;border:3px solid #cfe6ea;border-radius:14px;
+  padding:10px 18px;font-size:20px;color:#1f4258;font-weight:700;}
 .transbox:empty:before{content:'여기에 말한 내용이 나타나요…';color:#9bb2bf;}
-textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;padding:8px 12px;
+textarea.kb{width:500px;height:50px;border:3px solid #cfe6ea;border-radius:12px;padding:8px 12px;
   font-size:18px;font-weight:700;color:#1f4258;resize:none;display:none;}
-.stars{display:flex;gap:8px;}
-.star{font-size:38px;cursor:pointer;filter:grayscale(1) opacity(.5);transition:.14s;}
+.stars{display:flex;gap:6px;}
+.star{font-size:32px;cursor:pointer;filter:grayscale(1) opacity(.5);transition:.14s;}
 .star.lit{filter:none;transform:scale(1.2) rotate(8deg);}
-.guidetxt{background:#fff;border-radius:14px;padding:8px 14px;font-size:18px;font-weight:800;color:#1f4258;
+.guidetxt{background:#fff;border-radius:12px;padding:6px 12px;font-size:16px;font-weight:800;color:#1f4258;
   text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.15);max-width:580px;}
 
 /* === 숫자 BURST === */
@@ -286,10 +286,14 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
   filter:drop-shadow(0 5px 7px rgba(0,0,0,.35));}
 @keyframes mascotBob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
 .mascotBubble{background:#fff;border:4px solid #ffd23f;border-radius:20px;
-  padding:14px 22px;font-size:26px;font-weight:900;color:#1f4258;
-  max-width:330px;line-height:1.3;position:relative;margin-bottom:4px;
+  padding:12px 20px;font-size:21px;font-weight:900;color:#1f4258;
+  max-width:300px;line-height:1.35;position:relative;margin-bottom:4px;
+  word-break:keep-all;
   box-shadow:0 4px 10px rgba(0,0,0,.25);
   opacity:0;transform:scale(.3);transition:all .55s cubic-bezier(.3,1.5,.5,1);}
+
+/* topbar progress dots 숨김 — stageBar로 충분 */
+.topbar .prog{visibility:hidden;}
 .mascotBubble.on{opacity:1;transform:scale(1);}
 .mascotBubble::after{content:'';position:absolute;right:24px;bottom:-14px;
   border:8px solid transparent;border-top-color:#ffd23f;}
@@ -473,6 +477,39 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
 
 /* 핵심정리 화면 — 오늘 배운 것 시각 요약 */
 .summaryWrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+
+/* === SIT FIND — 다양한 상황 곱셈식 찾기 === */
+#scrSitFind .vbody{justify-content:flex-start;padding-top:8px;gap:12px;}
+.sitObjs{display:grid;gap:8px;justify-content:center;padding:14px 18px;
+  background:#fff;border-radius:18px;border:4px solid #ffd23f;box-shadow:0 6px 16px rgba(0,0,0,.18);
+  max-width:880px;}
+.sitObjs .sitObj{width:46px;height:46px;display:flex;align-items:center;justify-content:center;
+  font-size:36px;line-height:1;background:#fff5e0;border-radius:10px;border:2px solid #ffd23f;}
+.sitObjs .sitObj.bundled{background:rgba(92,194,74,.18);border-color:#5cc24a;}
+.sitObjs .sitObj.leftover{background:rgba(239,68,68,.18);border-color:#ef4444;animation:lftBlink 1s infinite;}
+@keyframes lftBlink{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.6);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}}
+.sitQBox{display:flex;align-items:center;gap:18px;background:#fff;border:5px solid #5fb6f0;border-radius:20px;
+  padding:12px 26px;box-shadow:0 5px 14px rgba(95,182,240,.3);}
+.sitQBox .sitLbl{font-size:24px;font-weight:900;color:#1a4a6e;}
+.sitQBox .sitEq{font-size:38px;font-weight:900;color:#ff5a1f;background:#fff8d6;
+  padding:6px 22px;border-radius:14px;border:4px solid #ffd23f;}
+.sitOpts{display:flex;gap:24px;}
+.sitOpt{font-size:30px;font-weight:900;padding:14px 36px;border-radius:18px;cursor:pointer;
+  border:5px solid;transition:.15s;color:#fff;font-family:inherit;
+  box-shadow:0 6px 0 rgba(0,0,0,.2);}
+.sitOpt:hover{transform:translateY(-2px);}
+.sitOpt:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(0,0,0,.2);}
+.sitOpt.yes{background:linear-gradient(180deg,#83d976,#5cc24a);border-color:#2d7d22;}
+.sitOpt.no{background:linear-gradient(180deg,#ffaac5,#ff7095);border-color:#c44d6a;}
+.sitOpt:disabled{opacity:.5;cursor:not-allowed;}
+.sitReason{min-height:60px;max-width:920px;font-size:22px;font-weight:800;text-align:center;
+  padding:0 24px;line-height:1.4;}
+.sitReason.correct{color:#2d7d22;}
+.sitReason.wrong{color:#c44d6a;}
+.sitReason .rBox{background:#fff;border-radius:18px;padding:14px 26px;display:inline-block;
+  border:5px solid;box-shadow:0 5px 14px rgba(0,0,0,.18);}
+.sitReason.correct .rBox{border-color:#5cc24a;}
+.sitReason.wrong .rBox{border-color:#ef4444;}
 .summaryTitle{font-size:34px;font-weight:900;color:#fff;background:rgba(8,20,50,.55);
   padding:11px 32px;border-radius:999px;text-shadow:0 2px 4px rgba(0,0,0,.4);}
 .summaryCards{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;}
@@ -796,6 +833,32 @@ textarea.kb{width:500px;height:56px;border:4px solid #cfe6ea;border-radius:14px;
     <div class="keypadH" id="manyKeypad"></div>
     <div class="actionRow">
       <button class="btn btn-go" id="manyNext" style="display:none;">다음 ➡️</button>
+    </div>
+  </div>
+</section>
+
+<!-- 다양한 상황 곱셈식 찾기 + 친절한 나머지 설명 -->
+<section class="screen" id="scrSitFind">
+  <div class="topbar"><button class="homeBtn" onclick="goHome()" title="처음으로">🏠</button><button class="backBtn" onclick="goBack()" title="직전 화면">⬅️</button><div class="title">🔍 곱셈식 맞나요?</div>
+    <div class="prog" id="pgSit"></div>
+    <button class="spk">🔇</button>
+  </div>
+  <div class="vbody">
+    <div class="instrTxt">🤔 묶음으로 정리되면 <span class="kw kw-mul">곱셈식</span>! 안 되는 경우도 있어요</div>
+    <div class="picCard" id="sitPicCard">
+      <div class="sitObjs" id="sitObjs"></div>
+    </div>
+    <div class="sitQBox">
+      <span class="sitLbl">이 곱셈식이 맞을까?</span>
+      <span class="sitEq" id="sitEq">3 × 4</span>
+    </div>
+    <div class="sitOpts">
+      <button class="sitOpt yes" onclick="sitChoose(true)">⭕ 맞아요</button>
+      <button class="sitOpt no" onclick="sitChoose(false)">❌ 안 됨</button>
+    </div>
+    <div class="sitReason" id="sitReason"></div>
+    <div class="actionRow">
+      <button class="btn btn-go" id="sitNext" style="display:none;" onclick="sitGoNext()">다음 ➡️</button>
     </div>
   </div>
 </section>
@@ -1135,7 +1198,7 @@ function goHome(){
 function show(id){$$('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');}
 
 /* === 마스코트 동반자 === */
-const MASCOT_MSGS = {"scrTut": "✖️ × 기호 친해져 보자!", "scrMot": "🤔 더하기와 곱셈, 어떻게 다를까?", "scrMul": "👀 같은 수가 몇 번 더해졌어?", "scrMany": "🤔 12를 곱셈식으로 어떻게 쓸까?", "scrNotebook": "✏️ 곱셈식 직접 써봐!", "scrChal": "💪 곱셈식 채워봐!", "scrPost": "뭐가 새로 알게 됐어?", "scrCert": "곱셈 마스터!"};
+const MASCOT_MSGS = {"scrTut": "✖️ × 기호 친해지자!", "scrMot": "🤔 더하기 vs 곱셈?", "scrMul": "👀 같은 수가 몇 번?", "scrMany": "🤔 12를 곱셈식으로?", "scrSitFind": "🤔 묶음이 딱 맞아?", "scrNotebook": "✏️ 곱셈식 써봐!", "scrChal": "💪 곱셈식 채워봐!", "scrPost": "뭐가 새로 알게 됐어?", "scrCert": "곱셈 마스터!"};
 let _mascotBubbleTimer = null;
 function setMascot(msg, dur){
   const b = $('#mascotBubble');
@@ -1554,7 +1617,7 @@ function renderMul(){
   const P=A3_PROBLEMS[mulIdx];
   MUL={P,phase:1,picks:{}};
   progress($('#pgMul'),A3_PROBLEMS.length,mulIdx);
-  $('#mulTitle').textContent=`✖️ <span class="kw kw-mul">곱셈식</span> (${mulIdx+1}/${A3_PROBLEMS.length})`;
+  $('#mulTitle').innerHTML=`✖️ <span class="kw kw-mul">곱셈식</span> (${mulIdx+1}/${A3_PROBLEMS.length})`;
   $('#mulInstr').innerHTML=`${P.emoji} ${eul(P.ctx)} <b style="color:#ffd23f;">${P.size*P.groups}개</b>가 있어요! 함께 <span class="kw kw-mul">곱셈식</span> 만들어 봐요`;
   // 한 줄 배열로 표시 (아직 묶음 X)
   const grid=$('#mulGrid'),svg=$('#mulSvg');
@@ -1789,8 +1852,83 @@ $('#manyNext').onclick=()=>{
     hints:['12개는 항상 12개. 무엇이 달라졌나요?',
       '2개씩 묶으면 6묶음 → 2×6. 3개씩 묶으면 4묶음 → 3×4',
       '👉 답은 "한 묶음 크기를 바꾸면 곱셈식도 달라져요"']
-  },()=>show('scrSummary'));
+  },()=>startSit());
 };
+
+/* ================ 다양한 상황 곱셈식 찾기 ================ */
+const SIT_PROBLEMS=[
+  {total:15, ico:'⭐', cols:5, grpSize:5, candidate:'5 × 3', correct:true,
+   reasonOk:'⭐ 5개씩 묶으면 정확히 3묶음. 5×3 = 15 ✓ 딱 맞아요!'},
+  {total:11, ico:'🍪', cols:4, grpSize:3, candidate:'3 × 4', correct:false,
+   reasonOk:'🍪 11을 3개씩 묶으면 3묶음 + <b style="color:#c44d6a;">2개 남아요</b>. 3×4=12라서 안 됨!'},
+  {total:8, ico:'🍎', cols:4, grpSize:4, candidate:'4 × 2', correct:true,
+   reasonOk:'🍎 4개씩 묶으면 정확히 2묶음. 4×2 = 8 ✓ 딱 맞아요!'},
+  {total:13, ico:'🥕', cols:6, grpSize:2, candidate:'2 × 6', correct:false,
+   reasonOk:'🥕 13을 2개씩 묶으면 6묶음 + <b style="color:#c44d6a;">1개 남아요</b>. 2×6=12라서 안 됨!'},
+  {total:14, ico:'🌸', cols:7, grpSize:7, candidate:'7 × 2', correct:true,
+   reasonOk:'🌸 7개씩 묶으면 정확히 2묶음. 7×2 = 14 ✓ 딱 맞아요!'}
+];
+let sitIdx=0, sitAnswered=false;
+function startSit(){
+  sitIdx=0;sitAnswered=false;
+  show('scrSitFind');renderSit();
+}
+function renderSit(){
+  sitAnswered=false;
+  const P=SIT_PROBLEMS[sitIdx];
+  progress($('#pgSit'),SIT_PROBLEMS.length,sitIdx);
+  // 그리드 채우기 — bundled (정확히 묶이는 부분)과 leftover (나머지) 구분
+  const objs=$('#sitObjs');objs.innerHTML='';
+  objs.style.gridTemplateColumns=`repeat(${P.cols},46px)`;
+  const fullBundles=Math.floor(P.total/P.grpSize);
+  const bundledCount=fullBundles*P.grpSize;
+  for(let i=0;i<P.total;i++){
+    const o=document.createElement('div');o.className='sitObj';o.textContent=P.ico;
+    objs.appendChild(o);
+  }
+  $('#sitEq').textContent=P.candidate;
+  $('#sitReason').innerHTML='';$('#sitReason').className='sitReason';
+  $('#sitNext').style.display='none';
+  // 옵션 활성화
+  $$('#scrSitFind .sitOpt').forEach(b=>b.disabled=false);
+}
+function sitChoose(userSaysYes){
+  if(sitAnswered)return;
+  const P=SIT_PROBLEMS[sitIdx];
+  const isCorrect=(userSaysYes===P.correct);
+  sitAnswered=true;
+  // 그림에 정확한 묶음 + 나머지 표시
+  const fullBundles=Math.floor(P.total/P.grpSize);
+  const bundledCount=fullBundles*P.grpSize;
+  const cells=$$('#sitObjs .sitObj');
+  cells.forEach((o,i)=>{
+    if(i<bundledCount)o.classList.add('bundled');
+    else o.classList.add('leftover');
+  });
+  // 이유 표시
+  const r=$('#sitReason');
+  if(isCorrect){
+    r.className='sitReason correct';
+    r.innerHTML=`<div class="rBox">✅ ${P.reasonOk}</div>`;
+    sndOk();confetti();
+  }else{
+    r.className='sitReason wrong';
+    // 학생이 틀린 답 줬을 때 — 정답 방향으로 친절하게 설명
+    r.innerHTML=`<div class="rBox">💡 ${P.reasonOk}</div>`;
+    sndNo();
+  }
+  $$('#scrSitFind .sitOpt').forEach(b=>b.disabled=true);
+  $('#sitNext').style.display='inline-block';
+}
+function sitGoNext(){
+  sitIdx++;
+  if(sitIdx>=SIT_PROBLEMS.length){
+    show('scrSummary');
+  }else{
+    renderSit();
+  }
+}
+
 
 /* ================ 도전 ================ */
 const A3_CHAL=[
@@ -1973,7 +2111,7 @@ $('#certAgain').onclick=()=>{S={name:S.name,helpUsed:0,stickers:0,stars:0,preTex
 $('#sumNext').onclick=()=>{show('scrNotebook');};
 
 /* 단계 진행 표시 관리 */
-const STAGE_MAP = {'scrMot':'mot','scrMul':'act','scrMany':'act','scrSummary':'sum','scrChal':'chal'};
+const STAGE_MAP = {'scrMot':'mot','scrMul':'act','scrMany':'act','scrSitFind':'act','scrSummary':'sum','scrChal':'chal'};
 const STAGE_ORDER = ['mot','act','sum','chal'];
 function updateStageBar(scrId){
   const bar = document.getElementById('stageBar');
