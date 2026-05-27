@@ -698,6 +698,8 @@ textarea.kb{width:500px;height:50px;border:3px solid #cfe6ea;border-radius:12px;
   box-shadow:0 3px 9px rgba(0,0,0,.15);}
 .dashRow b{font-size:18px;color:#1f4258;}
 .dashRow span{font-size:18px;color:#5b7585;font-weight:700;}
+/* 빈 박스 숨김 — 화면 진입 직후 빈 상태 가림 */
+.instrTxt:empty,.picCard:empty,.evalCard:has(>.evalQ:empty){visibility:hidden;}
 </style>
 </head>
 <body>
@@ -935,31 +937,31 @@ textarea.kb{width:500px;height:50px;border:3px solid #cfe6ea;border-radius:12px;
   <div class="fastPickWrap">
     <div class="fastPickIcon">⚡</div>
     <div class="fastPickTitle">도전 단계를 골라요!</div>
-    <div class="fastPickSub">10문제를 정해진 시간 안에! 어떤 칭호에 도전할까요?</div>
+    <div class="fastPickSub">5문제를 정해진 시간 안에! 어떤 칭호에 도전할까요?</div>
     <div class="fastPickGrid">
       <div class="fastCard lv1" onclick="startFast(1)">
-        <span class="fcTimeBadge">25초 도전</span>
+        <span class="fcTimeBadge">30초 도전</span>
         <div class="fcTitle">👑 곱셈왕</div>
         <div class="fcSub">곱셈식 마스터</div>
-        <div class="fcDesc">한 문제당 2.5초 · 극한 도전!</div>
+        <div class="fcDesc">⚡ 극한 도전!</div>
       </div>
       <div class="fastCard lv2" onclick="startFast(2)">
-        <span class="fcTimeBadge">45초 도전</span>
+        <span class="fcTimeBadge">1분 도전</span>
         <div class="fcTitle">⚡ 번개 여우</div>
         <div class="fcSub">아주 빠른 계산가</div>
-        <div class="fcDesc">한 문제당 4.5초 · 빠른 도전!</div>
+        <div class="fcDesc">⚡ 빠른 도전!</div>
       </div>
       <div class="fastCard lv3" onclick="startFast(3)">
-        <span class="fcTimeBadge">1분 10초 도전</span>
+        <span class="fcTimeBadge">1분 30초 도전</span>
         <div class="fcTitle">🦊 영리한 여우</div>
         <div class="fcSub">안정된 계산가</div>
-        <div class="fcDesc">한 문제당 7초 · 안정 도전!</div>
+        <div class="fcDesc">🛡️ 안정 도전!</div>
       </div>
       <div class="fastCard lv4" onclick="startFast(4)">
-        <span class="fcTimeBadge">1분 50초 도전</span>
+        <span class="fcTimeBadge">2분 도전 도전</span>
         <div class="fcTitle">🌙 차분한 늑대</div>
         <div class="fcSub">차분한 계산가</div>
-        <div class="fcDesc">한 문제당 11초 · 차분히 도전!</div>
+        <div class="fcDesc">🐢 차분히 도전!</div>
       </div>
     </div>
   </div>
@@ -1241,7 +1243,7 @@ const _origShow = show;
 show = function(id){
   _origShow(id);
   const mascot = $('#mascot');
-  if(id === 'scrStart'){ mascot.classList.add('hide'); }
+  if(['scrStart','scrSummary','scrFastPick','scrFast','scrCert','scrChal','scrNotebook','scrSitFind'].includes(id)){ mascot.classList.add('hide'); }
   else{ mascot.classList.remove('hide'); }
   const msg = MASCOT_MSGS[id];
   if(msg) setMascot(msg);
@@ -2142,10 +2144,10 @@ function updateStageBar(scrId){
 
 /* === 빠른 연산 — 칭호 데이터 === */
 const SPEED_TITLES = {
-  god:       {ico:'👑', name:'곱셈왕', sub:'곱셈식 마스터', desc:'한 문제 5초 · 극한 도전!', total:25, perQ:5, cls:'c1'},
-  lightning: {ico:'⚡', name:'번개 여우', sub:'아주 빠른 계산가', desc:'한 문제 9초 · 빠른 도전!', total:45, perQ:9, cls:'c2'},
-  rocket:    {ico:'🦊', name:'영리한 여우', sub:'안정된 계산가', desc:'한 문제 14초 · 안정 도전!', total:70, perQ:14, cls:'c3'},
-  owl:       {ico:'🌙', name:'차분한 늑대', sub:'차분한 계산가', desc:'한 문제 22초 · 차분히 도전!', total:110, perQ:22, cls:'c4'},
+  god:       {ico:'👑', name:'곱셈왕', sub:'곱셈식 마스터', desc:'30초 안에! ⚡ 극한 도전!', total:30, perQ:6, cls:'c1'},
+  lightning: {ico:'⚡', name:'번개 여우', sub:'아주 빠른 계산가', desc:'1분 안에! ⚡ 빠른 도전!', total:60, perQ:12, cls:'c2'},
+  rocket:    {ico:'🦊', name:'영리한 여우', sub:'안정된 계산가', desc:'1분 30초 안에! 🛡️ 안정 도전!', total:90, perQ:18, cls:'c3'},
+  owl:       {ico:'🌙', name:'차분한 늑대', sub:'차분한 계산가', desc:'2분 안에! 🐢 차분히 도전!', total:120, perQ:24, cls:'c4'},
   none:      {ico:'🐢', name:'천천히', sub:'시간 제한 없음', desc:'천천히 정확하게 풀어봐요', total:0, perQ:0, cls:'cn'}
 };
 let _speedTitle = null;       // 선택된 칭호 key
@@ -2182,7 +2184,7 @@ function startSpeedTimer(seconds){
     const pct = Math.max(0, Math.min(100, left/total*100));
     inner.style.width = pct + '%';
     const sec = Math.ceil(left/1000);
-    num.textContent = sec;
+    num.textContent = sec>=60?Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'):sec+'';
     num.classList.toggle('warn', sec<=5);
     if(left<=0){
       clearInterval(_speedTimerId);
@@ -2283,10 +2285,10 @@ function renderCertResult(){
 
 /* ⚡ 빠른 연산 시간 도전 시스템 */
 const FAST_LEVELS = {
-  1:{name:'곱셈왕',icon:'👑',time:25,emoji:'👑'},
-  2:{name:'번개 여우',icon:'⚡',time:45,emoji:'⚡'},
-  3:{name:'영리한 여우',icon:'🦊',time:70,emoji:'🦊'},
-  4:{name:'차분한 늑대',icon:'🌙',time:110,emoji:'🌙'}
+  1:{name:'곱셈왕',icon:'👑',time:30,emoji:'👑'},
+  2:{name:'번개 여우',icon:'⚡',time:60,emoji:'⚡'},
+  3:{name:'영리한 여우',icon:'🦊',time:90,emoji:'🦊'},
+  4:{name:'차분한 늑대',icon:'🌙',time:120,emoji:'🌙'}
 };
 let fastState={lv:0,problems:[],idx:0,ok:0,no:0,input:'',startMs:0,remainSec:0,timerId:null};
 
@@ -2390,22 +2392,22 @@ function genFastProblems(){
   <h2>⚡ 도전 단계를 골라요!</h2>
   <div class="sLead">5문제를 정해진 시간 안에! 어떤 칭호에 도전할까요?</div>
   <div class="speedGrid">
-    <button class="speedCard c1" data-tk="god"><span class="sBadge">25초 도전</span>
+    <button class="speedCard c1" data-tk="god"><span class="sBadge">30초 도전</span>
       <div class="sName">👑 곱셈왕</div>
       <div class="sDesc">곱셈식 마스터</div>
-      <div class="sExtra">한 문제 5초 · 극한 도전!</div></button>
-    <button class="speedCard c2" data-tk="lightning"><span class="sBadge">45초 도전</span>
+      <div class="sExtra">30초 안에 ⚡ · 극한 도전!</div></button>
+    <button class="speedCard c2" data-tk="lightning"><span class="sBadge">1분 도전</span>
       <div class="sName">⚡ 번개 여우</div>
       <div class="sDesc">아주 빠른 계산가</div>
-      <div class="sExtra">한 문제 9초 · 빠른 도전!</div></button>
-    <button class="speedCard c3" data-tk="rocket"><span class="sBadge">1분 10초 도전</span>
+      <div class="sExtra">1분 안에 ⚡ · 빠른 도전!</div></button>
+    <button class="speedCard c3" data-tk="rocket"><span class="sBadge">1분 30초 도전</span>
       <div class="sName">🦊 영리한 여우</div>
       <div class="sDesc">안정된 계산가</div>
-      <div class="sExtra">한 문제 14초 · 안정 도전!</div></button>
-    <button class="speedCard c4" data-tk="owl"><span class="sBadge">1분 50초 도전</span>
+      <div class="sExtra">1분 30초 안에 🛡️ · 안정 도전!</div></button>
+    <button class="speedCard c4" data-tk="owl"><span class="sBadge">2분 도전 도전</span>
       <div class="sName">🌙 차분한 늑대</div>
       <div class="sDesc">차분한 계산가</div>
-      <div class="sExtra">한 문제 22초 · 차분히 도전!</div></button>
+      <div class="sExtra">2분 안에 🐢 · 차분히 도전!</div></button>
     <button class="speedCard cn" data-tk="none"><div class="sName">🐢 그냥 천천히 풀기</div>
       <div class="sExtra">천천히 정확하게 풀어봐요</div></button>
   </div>
