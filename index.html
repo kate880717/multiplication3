@@ -700,6 +700,37 @@ textarea.kb{width:500px;height:50px;border:3px solid #cfe6ea;border-radius:12px;
 .dashRow span{font-size:18px;color:#5b7585;font-weight:700;}
 /* 빈 박스 숨김 — 화면 진입 직후 빈 상태 가림 */
 .instrTxt:empty,.picCard:empty,.evalCard:has(>.evalQ:empty){visibility:hidden;}
+/* 줄바꿈 — 한국어 어절 단위로 자연스럽게 */
+body,.bubble,.mascotBubble,#bubble,.instrTxt,.goal,.goal p,.tutCard,.tutCard *,.chapMsg,
+.chMsg,.tutBox,.tip,.instr,.fbBox,.helpBox,.miniInstr,.bigtxt,.title,
+.sitQBox,.sitQ,.evalQ,.swapQ,.danIntro,.tutSub,.assistTxt,h1,h2,h3,h4,p,span,div,button{
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+/* 인라인 코드/숫자 등은 끊지 않음 */
+.qa,.qb,.qbox,.q,.ans,.num,.numBig,.cnt,.eOpt,.eOpt *,
+.balloon,.balQ,.fcAns,.evalInput,.quizInput,.timerNum{
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.sitObj.sitPick{transform:scale(1.18)!important;background:#fff8d6!important;border:3px solid #ff5a1f!important;box-shadow:0 0 0 3px #ffd23f;cursor:pointer;}
+.sitObj{cursor:pointer;}
+.sitInquireRow{font-size:20px;font-weight:800;color:#1a4a6e;text-align:center;}
+.sitInquireRow #sitInquireCnt{color:#ff5a1f;font-size:28px;font-weight:900;padding:0 6px;}
+.sitInquireBtn{font-size:22px;padding:12px 36px;}
+.sitRetryBtn{font-size:18px;padding:10px 24px;background:linear-gradient(180deg,#cba2ff,#9b6ddc);color:#fff;border:3px solid #7841c4;}
+#scrSitFind .sitOpts{display:flex;flex-direction:column;align-items:center;gap:10px;}
+
+/* app3 scrMul 탐구 UI */
+.obj.mulPick{transform:scale(1.18)!important;background:#fff8d6!important;border:3px solid #ff5a1f!important;box-shadow:0 0 0 3px #ffd23f!important;border-radius:10px;}
+.mulInquireWrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px;}
+.mulInquireRow{font-size:20px;font-weight:800;color:#1a4a6e;}
+.mulInquireRow #mulInquireCnt{color:#ff5a1f;font-size:28px;font-weight:900;padding:0 6px;}
+.mulInquireBtn{font-size:22px;padding:12px 36px;}
+.mulInquireFb{font-size:18px;font-weight:800;min-height:28px;text-align:center;line-height:1.4;max-width:520px;}
+.mulInquireFb.ok{color:#2d7d22;background:#e6f9f0;padding:10px 16px;border-radius:12px;}
+.mulInquireFb.hint{color:#7841c4;background:#f0e8ff;padding:10px 16px;border-radius:12px;border:2px dashed #b07bff;}
 </style>
 </head>
 <body>
@@ -1327,22 +1358,42 @@ function sizeSvg(svg,grid){svg.setAttribute('width',grid.clientWidth);
   svg.setAttribute('height',grid.clientHeight);
   svg.setAttribute('viewBox',`0 0 ${grid.clientWidth} ${grid.clientHeight}`);}
 function drawRing(svg,objs,colorIdx){
-  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
-  objs.forEach(o=>{minX=Math.min(minX,o.offsetLeft);minY=Math.min(minY,o.offsetTop);
-    maxX=Math.max(maxX,o.offsetLeft+o.offsetWidth);maxY=Math.max(maxY,o.offsetTop+o.offsetHeight);});
-  const pad=12,cx2=(minX+maxX)/2,cy2=(minY+maxY)/2,
-    rx=(maxX-minX)/2+pad,ry=(maxY-minY)/2+pad;
-  const el=document.createElementNS(SVGNS,'ellipse');
-  el.setAttribute('cx',cx2);el.setAttribute('cy',cy2);
-  el.setAttribute('rx',rx);el.setAttribute('ry',ry);
-  el.setAttribute('stroke',RINGCOL[colorIdx%6]);
-  const C=2*Math.PI*Math.sqrt((rx*rx+ry*ry)/2);
-  el.style.strokeDasharray=C;el.style.strokeDashoffset=C;
-  svg.appendChild(el);
-  requestAnimationFrame(()=>{el.style.transition='stroke-dashoffset .9s cubic-bezier(.4,.1,.3,1)';
-    el.style.strokeDashoffset=0;});
-  return el;
+  if(!objs||objs.length===0)return;
+  const color=RINGCOL[colorIdx%6];
+  const pad=30;
+  const g=document.createElementNS(SVGNS,'g');
+  objs.forEach((o,i)=>{
+    const cx=o.offsetLeft+o.offsetWidth/2;
+    const cy=o.offsetTop+o.offsetHeight/2;
+    const c=document.createElementNS(SVGNS,'circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',pad);
+    c.setAttribute('stroke',color);c.style.fill='none';c.style.strokeWidth='3.5';
+    const C=2*Math.PI*pad;
+    c.style.strokeDasharray=C;c.style.strokeDashoffset=C;
+    g.appendChild(c);
+    requestAnimationFrame(()=>{
+      c.style.transition='stroke-dashoffset .4s ease '+(i*0.07)+'s';
+      c.style.strokeDashoffset='0';
+    });
+  });
+  // 인접 사물 사이만 점선 연결 (거리 제한 — 멀리 떨어진 사물은 연결 X)
+  for(let i=0;i<objs.length-1;i++){
+    const o1=objs[i],o2=objs[i+1];
+    const x1=o1.offsetLeft+o1.offsetWidth/2,y1=o1.offsetTop+o1.offsetHeight/2;
+    const x2=o2.offsetLeft+o2.offsetWidth/2,y2=o2.offsetTop+o2.offsetHeight/2;
+    const dx=x2-x1,dy=y2-y1,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<pad*2||dist>180)continue;
+    const ux=dx/dist,uy=dy/dist;
+    const ln=document.createElementNS(SVGNS,'line');
+    ln.setAttribute('x1',x1+ux*pad);ln.setAttribute('y1',y1+uy*pad);
+    ln.setAttribute('x2',x2-ux*pad);ln.setAttribute('y2',y2-uy*pad);
+    ln.setAttribute('stroke',color);ln.style.strokeWidth='3';ln.style.strokeDasharray='5,4';ln.style.opacity='0.5';
+    g.appendChild(ln);
+  }
+  svg.appendChild(g);
+  return g;
 }
+
 
 function setCounter(numEl,dotsEl,n,total){
   numEl.textContent=n;
@@ -1640,19 +1691,43 @@ function renderMul(){
 function askBundleSize(){
   MUL.phase=1;
   const P=MUL.P;
-  $('#mulQuestion').innerHTML=`🤔 ${eul(P.ctx)} <b>몇 개씩</b> 묶을까?`;
-  // 보기: 정답 + 정답-1, 정답+1 (1 이상)
-  const opts=[Math.max(1,P.size-1), P.size, P.size+1];
-  showChoices(opts.map(n=>n+'개씩'), P.size+'개씩', (picked,correct,btn)=>{
-    if(picked!==correct){
-      btn.classList.add('wrong');sndNo();
-      mascotCelebrate('🤔 다시 생각해봐!');
-      setTimeout(()=>btn.classList.remove('wrong'),500);return;
-    }
-    btn.classList.add('right');sndOk();
-    // 묶음으로 재배치
-    setTimeout(()=>animateGrouping(), 600);
+  const total=P.size*P.groups;
+  $('#mulQuestion').innerHTML=`🤔 ${eul(P.ctx)} <b style="color:#ff5a1f;">${total}개</b>! 사물을 클릭해서 <b>첫 묶음</b>을 만들어 봐!`;
+  $('#mulChoices').innerHTML='';  // 보기 3개 제거
+  // 사물 직접 클릭으로 묶음 크기 결정
+  let mulPicked=[];
+  const objs=[...document.querySelectorAll('#mulGrid .obj')];
+  objs.forEach(o=>{
+    o.style.cursor='pointer';
+    o.onclick=()=>{
+      if(mulPicked.includes(o)){mulPicked=mulPicked.filter(x=>x!==o);o.classList.remove('mulPick');}
+      else{mulPicked.push(o);o.classList.add('mulPick');}
+      $('#mulInquireCnt')&&($('#mulInquireCnt').textContent=mulPicked.length);
+    };
   });
+  // 확인 버튼 + 카운터
+  const wrap=document.createElement('div');
+  wrap.className='mulInquireWrap';
+  wrap.innerHTML=`<div class="mulInquireRow">짚은 개수: <span id="mulInquireCnt">0</span> 개</div>
+    <button class="btn btn-go mulInquireBtn" id="mulConfirmBtn">✓ 이 크기로 묶기</button>
+    <div class="mulInquireFb" id="mulInquireFb">&nbsp;</div>`;
+  $('#mulChoices').appendChild(wrap);
+  document.getElementById('mulConfirmBtn').onclick=()=>{
+    const N=mulPicked.length;
+    const fb=document.getElementById('mulInquireFb');
+    if(N<2){fb.innerHTML='💡 적어도 2개는 짚어봐요!';fb.className='mulInquireFb hint';return;}
+    if(total%N!==0){
+      fb.innerHTML=`💭 ${N}씩 묶으면 <b>${Math.floor(total/N)}묶음에 ${total%N}개가 남아요</b>. 딱 떨어지는 크기로 다시!`;
+      fb.className='mulInquireFb hint';return;
+    }
+    fb.innerHTML=`🎉 <b>${N}씩 ${total/N}묶음</b>으로 묶을 수 있어요!`;
+    fb.className='mulInquireFb ok';
+    // P.size = N으로 변경 (그룹 수도 재계산)
+    MUL.P={...P,size:N,groups:total/N};
+    objs.forEach(o=>{o.style.cursor='';o.onclick=null;o.classList.remove('mulPick');});
+    sndOk();
+    setTimeout(()=>{wrap.remove();animateGrouping();},800);
+  };
 }
 
 function animateGrouping(){
@@ -1870,57 +1945,89 @@ const SIT_PROBLEMS=[
   {total:14, ico:'🌸', cols:7, grpSize:7, candidate:'7 × 2', correct:true,
    reasonOk:'🌸 7개씩 묶으면 정확히 2묶음. 7×2 = 14 ✓ 딱 맞아요!'}
 ];
-let sitIdx=0, sitAnswered=false;
+let sitIdx=0, sitAnswered=false, _sitPicked=[];
 function startSit(){
-  sitIdx=0;sitAnswered=false;
+  sitIdx=0;sitAnswered=false;_sitPicked=[];
   show('scrSitFind');renderSit();
 }
 function renderSit(){
-  sitAnswered=false;
+  sitAnswered=false;_sitPicked=[];
   const P=SIT_PROBLEMS[sitIdx];
   progress($('#pgSit'),SIT_PROBLEMS.length,sitIdx);
-  // 그리드 채우기 — bundled (정확히 묶이는 부분)과 leftover (나머지) 구분
   const objs=$('#sitObjs');objs.innerHTML='';
   objs.style.gridTemplateColumns=`repeat(${P.cols},46px)`;
-  const fullBundles=Math.floor(P.total/P.grpSize);
-  const bundledCount=fullBundles*P.grpSize;
   for(let i=0;i<P.total;i++){
     const o=document.createElement('div');o.className='sitObj';o.textContent=P.ico;
+    o.dataset.i=i;
     objs.appendChild(o);
+    o.onclick=()=>sitObjClick(o);
   }
-  $('#sitEq').textContent=P.candidate;
+  // UI 변경: 식 가리고 사물 직접 클릭으로 발견
+  $('.sitLbl')&&($('.sitLbl').innerHTML=`${P.ico} <b style="color:#ff5a1f;">${P.total}개</b>를 곱셈식으로 표현할 수 있을까?`);
+  $('#sitEq').textContent='?';
+  $('#sitEq').style.opacity='0.4';
+  // 기존 OX 버튼 → 사물 클릭 + 확인 버튼
+  const sitOpts=document.querySelector('#scrSitFind .sitOpts');
+  if(sitOpts){
+    sitOpts.innerHTML=`<div class="sitInquireRow">짚은 개수: <span id="sitInquireCnt">0</span> 개</div>
+      <button class="btn btn-go sitInquireBtn" id="sitConfirmBtn" onclick="sitConfirm()">✓ 이 크기로 묶어보기</button>`;
+  }
   $('#sitReason').innerHTML='';$('#sitReason').className='sitReason';
   $('#sitNext').style.display='none';
-  // 옵션 활성화
-  $$('#scrSitFind .sitOpt').forEach(b=>b.disabled=false);
 }
-function sitChoose(userSaysYes){
+function sitObjClick(o){
+  if(sitAnswered)return;
+  if(_sitPicked.includes(o)){_sitPicked=_sitPicked.filter(x=>x!==o);o.classList.remove('sitPick');}
+  else{_sitPicked.push(o);o.classList.add('sitPick');}
+  const cnt=document.getElementById('sitInquireCnt');if(cnt)cnt.textContent=_sitPicked.length;
+}
+function sitConfirm(){
   if(sitAnswered)return;
   const P=SIT_PROBLEMS[sitIdx];
-  const isCorrect=(userSaysYes===P.correct);
+  const N=_sitPicked.length;
+  if(N<2){toast('💡 적어도 2개는 짚어봐요!');return;}
   sitAnswered=true;
-  // 그림에 정확한 묶음 + 나머지 표시
-  const fullBundles=Math.floor(P.total/P.grpSize);
-  const bundledCount=fullBundles*P.grpSize;
+  const fullBundles=Math.floor(P.total/N);
+  const remainder=P.total%N;
   const cells=$$('#sitObjs .sitObj');
-  cells.forEach((o,i)=>{
-    if(i<bundledCount)o.classList.add('bundled');
-    else o.classList.add('leftover');
+  cells.forEach(c=>c.classList.remove('sitPick'));
+  cells.forEach((c,i)=>{
+    if(i<fullBundles*N)c.classList.add('bundled');
+    else c.classList.add('leftover');
   });
-  // 이유 표시
+  $('#sitEq').style.opacity='1';
   const r=$('#sitReason');
-  if(isCorrect){
+  if(remainder===0){
+    $('#sitEq').textContent=`${N} × ${fullBundles} = ${P.total}`;
     r.className='sitReason correct';
-    r.innerHTML=`<div class="rBox">✅ ${P.reasonOk}</div>`;
+    r.innerHTML=`<div class="rBox">${P.ico} ${N}개씩 묶으면 정확히 ${fullBundles}묶음! <b>${N}×${fullBundles} = ${P.total}</b> ✓ 딱 맞아요!</div>`;
     sndOk();confetti();
-  }else{
+  } else {
+    $('#sitEq').textContent=`${N} × ${fullBundles} + ${remainder}`;
     r.className='sitReason wrong';
-    // 학생이 틀린 답 줬을 때 — 정답 방향으로 친절하게 설명
-    r.innerHTML=`<div class="rBox">💡 ${P.reasonOk}</div>`;
+    r.innerHTML=`<div class="rBox">${P.ico} ${P.total}을 ${N}개씩 묶으면 ${fullBundles}묶음에 <b style="color:#c44d6a;">${remainder}개가 남아요</b>. 다른 크기도 시도해 봐요!</div>`;
     sndNo();
   }
-  $$('#scrSitFind .sitOpt').forEach(b=>b.disabled=true);
+  // 다시 묶어보기 + 다음 버튼
+  const sitOpts=document.querySelector('#scrSitFind .sitOpts');
+  if(sitOpts){
+    sitOpts.innerHTML+=`<button class="btn sitRetryBtn" onclick="sitRetry()">🔄 다시 묶어보기</button>`;
+  }
   $('#sitNext').style.display='inline-block';
+  document.getElementById('sitConfirmBtn')&&(document.getElementById('sitConfirmBtn').disabled=true);
+}
+function sitRetry(){
+  sitAnswered=false;_sitPicked=[];
+  const cells=$$('#sitObjs .sitObj');
+  cells.forEach(c=>{c.classList.remove('bundled','leftover','sitPick');});
+  $('#sitEq').textContent='?';$('#sitEq').style.opacity='0.4';
+  $('#sitReason').innerHTML='';$('#sitReason').className='sitReason';
+  const sitOpts=document.querySelector('#scrSitFind .sitOpts');
+  if(sitOpts){
+    sitOpts.innerHTML=`<div class="sitInquireRow">짚은 개수: <span id="sitInquireCnt">0</span> 개</div>
+      <button class="btn btn-go sitInquireBtn" id="sitConfirmBtn" onclick="sitConfirm()">✓ 이 크기로 묶어보기</button>`;
+  }
+  $('#sitNext').style.display='none';
 }
 function sitGoNext(){
   sitIdx++;
