@@ -8,11 +8,11 @@
 /* ============ 1280×800 안에 다 들어가도록 정밀 계산 ============ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
   font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
-html,body{width:100%;height:100%;overflow:hidden;background:#2a1408;}
+html,body{width:100%;height:100%;overflow:hidden;background:#3a2412;}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
 #stage{position:absolute;width:1280px;height:800px;left:50%;top:50%;
   transform:translate(-50%,-50%) scale(1);transform-origin:center center;overflow:hidden;border-radius:8px;
-  background:linear-gradient(165deg,#ff8c5a 0%,#ff6b35 55%,#c44a1a 100%);}
+  background:linear-gradient(165deg,#ffd1a8 0%,#ffae7a 55%,#e8855a 100%);}
 #decor{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .cloud{position:absolute;font-size:42px;opacity:.7;animation:drift linear infinite;
   filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));}
@@ -458,11 +458,11 @@ textarea.kb{width:500px;height:50px;border:3px solid #cfe6ea;border-radius:12px;
 
 
 /* 핵심개념 키워드 강조 — 묶음 / 배 / 곱셈식 / 뛰어 세기 */
-.kw{display:inline-block;padding:1px 8px;border-radius:8px;font-weight:900;line-height:1.1;}
-.kw-bd{color:#a86b00;background:rgba(255,210,63,.35);}  /* 묶음 — 노랑 */
-.kw-bae{color:#0a6a3a;background:rgba(34,197,94,.25);}  /* 배 — 초록 */
-.kw-mul{color:#8a2a0a;background:rgba(255,107,53,.25);} /* 곱셈식 — 주황 */
-.kw-skip{color:#1a4a8a;background:rgba(74,163,255,.25);}/* 뛰어세기 — 파랑 */
+.kw{display:inline-block;padding:2px 10px;border-radius:8px;font-weight:900;line-height:1.2;color:#fff;}
+.kw-bd{background:#e09020;}  /* 묶음 — 진한 노랑 */
+.kw-bae{background:#22b258;}  /* 배 — 진한 초록 */
+.kw-mul{background:#ff5a1f;} /* 곱셈식 — 진한 주황 */
+.kw-skip{background:#3a8de8;}/* 뛰어세기 — 진한 파랑 */
 
 
 /* 학습목표 카드 — 시작화면에 알찬 목표 표시 */
@@ -902,7 +902,7 @@ body,.bubble,.mascotBubble,#bubble,.instrTxt,.goal,.goal p,.tutCard,.tutCard *,.
     <div class="summaryTitle">📌 오늘 알게 된 것</div>
     <div class="summaryCards">
       <div class="sumCard"><div class="sIco">✖️</div><div class="sLbl">곱셈식</div>
-        <div class="sTxt"><span class="kw kw-bd">같은 수</span>가 N번 더해지면 <span class="kw kw-mul">곱셈식</span></div>
+        <div class="sTxt"><span class="kw kw-bd">같은 수</span>가 □번 더해지면 <span class="kw kw-mul">곱셈식</span></div>
         <div class="sEq">3+3+3+3 = 3×4</div></div>
       <div class="sumCard"><div class="sIco">🔢</div><div class="sLbl">읽는 법</div>
         <div class="sTxt">○씩 ○묶음 = ○ × ○</div>
